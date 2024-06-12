@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Office.Web", "Office.Web\Office.Web.csproj", "{F7842A1B-FC58-44F9-AA64-C6932BFC5C75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Office.DAL", "Office.DAL\Office.DAL.csproj", "{BA7FFEA8-49F5-4117-A412-EDBB5C93E841}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Office.BLL", "Office.BLL\Office.BLL.csproj", "{18DA4525-DD59-40E5-8753-BA59D2D2B7A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{F7842A1B-FC58-44F9-AA64-C6932BFC5C75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7842A1B-FC58-44F9-AA64-C6932BFC5C75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7842A1B-FC58-44F9-AA64-C6932BFC5C75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA7FFEA8-49F5-4117-A412-EDBB5C93E841}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA7FFEA8-49F5-4117-A412-EDBB5C93E841}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA7FFEA8-49F5-4117-A412-EDBB5C93E841}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA7FFEA8-49F5-4117-A412-EDBB5C93E841}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18DA4525-DD59-40E5-8753-BA59D2D2B7A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18DA4525-DD59-40E5-8753-BA59D2D2B7A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18DA4525-DD59-40E5-8753-BA59D2D2B7A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18DA4525-DD59-40E5-8753-BA59D2D2B7A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
