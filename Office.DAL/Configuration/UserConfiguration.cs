@@ -4,9 +4,9 @@ using Office.DAL.Entity;
 
 namespace Office.DAL.Configuration;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public class UserConfiguration : IEntityTypeConfiguration<BaseUser>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<BaseUser> builder)
     {
         
     }
