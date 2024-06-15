@@ -8,10 +8,12 @@ namespace Office.DAL.Configuration
     {
         public void Configure(EntityTypeBuilder<Employee> builder)
         {
-            // Указываем, что Employee наследует от BaseUser
             builder.HasBaseType<BaseUser>();
             
-            
+            builder.HasOne<HRManager>()
+                .WithMany()
+                .HasForeignKey(e => e.PeoplePartnerID)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
