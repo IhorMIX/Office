@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Office.DAL;
+
 namespace Office.Web;
 public class Startup
 {
@@ -10,7 +13,10 @@ public class Startup
     
     public void ConfigureServices(IServiceCollection services)
     {
-        
+        var connectionString = Environment.GetEnvironmentVariable("SQLSERVER_CONNECTION_STRING") ?? Configuration.GetConnectionString("ConnectionString");
+
+        services.AddDbContext<OfficeDbContext>(options =>
+            options.UseSqlServer(connectionString));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
