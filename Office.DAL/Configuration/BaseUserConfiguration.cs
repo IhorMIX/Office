@@ -5,9 +5,9 @@ using Office.DAL.Entity.Enums;
 
 namespace Office.DAL.Configuration;
 
-public class BaseUserConfiguration : IEntityTypeConfiguration<BaseUser>
+public class BaseUserConfiguration : IEntityTypeConfiguration<BaseEmployee>
 {
-    public void Configure(EntityTypeBuilder<BaseUser> builder)
+    public void Configure(EntityTypeBuilder<BaseEmployee> builder)
     {
         builder.HasKey(bu => bu.Id);
     }

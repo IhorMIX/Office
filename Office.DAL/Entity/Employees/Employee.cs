@@ -1,6 +1,6 @@
 namespace Office.DAL.Entity;
 
-public class Employee : BaseUser
+public class Employee : BaseEmployee
 {
     public string position { get; set; }
     public int PeoplePartnerID { get; set; }

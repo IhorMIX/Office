@@ -9,7 +9,7 @@ namespace Office.DAL.Configuration
         public void Configure(EntityTypeBuilder<ProjectManager> builder)
         {
             // Указываем, что Employee наследует от BaseUser
-            builder.HasBaseType<BaseUser>();
+            builder.HasBaseType<BaseEmployee>();
             
             
         }
