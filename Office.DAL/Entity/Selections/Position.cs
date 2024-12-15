@@ -1,4 +1,6 @@
-namespace Office.DAL.Entity;
+using Office.DAL.Entity.Employees;
+
+namespace Office.DAL.Entity.Selections;
 
 public class Position : BaseEntity
 {

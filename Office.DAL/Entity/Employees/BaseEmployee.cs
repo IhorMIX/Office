@@ -1,5 +1,3 @@
-using Office.DAL.Entity.Enums;
-
 namespace Office.DAL.Entity;
 
 public class BaseEmployee : BaseEntity
