@@ -16,9 +16,15 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
             .AsQueryable();
     }
 
-    public IQueryable<BaseManager> GetAllBaseManagers()
+    public IQueryable<BaseManager> GetAllManagers()
     {
         return _officeDbContext.Managers.Include(i => i.ApprovalRequests)
+            .AsQueryable();
+    }
+    
+    public IQueryable<Employee> GetAllEmployees()
+    {
+        return _officeDbContext.Employees
             .AsQueryable();
     }
     public IQueryable<HrManager> GetAllHrManagers()
