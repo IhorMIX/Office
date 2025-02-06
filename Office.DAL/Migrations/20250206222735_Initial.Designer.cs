@@ -12,7 +12,7 @@ using Office.DAL;
 namespace Office.DAL.Migrations
 {
     [DbContext(typeof(OfficeDbContext))]
-    [Migration("20241216204800_Initial")]
+    [Migration("20250206222735_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -306,18 +306,18 @@ namespace Office.DAL.Migrations
                     b.HasDiscriminator().HasValue("Employee");
                 });
 
-            modelBuilder.Entity("Office.DAL.Entity.ProjectManager", b =>
-                {
-                    b.HasBaseType("Office.DAL.Entity.BaseEmployee");
-
-                    b.HasDiscriminator().HasValue("ProjectManager");
-                });
-
             modelBuilder.Entity("Office.DAL.Entity.HrManager", b =>
                 {
                     b.HasBaseType("Office.DAL.Entity.Employees.BaseManager");
 
                     b.HasDiscriminator().HasValue("HrManager");
+                });
+
+            modelBuilder.Entity("Office.DAL.Entity.ProjectManager", b =>
+                {
+                    b.HasBaseType("Office.DAL.Entity.Employees.BaseManager");
+
+                    b.HasDiscriminator().HasValue("ProjectManager");
                 });
 
             modelBuilder.Entity("EmployeeProject", b =>
@@ -470,14 +470,14 @@ namespace Office.DAL.Migrations
                     b.Navigation("LeaveRequests");
                 });
 
-            modelBuilder.Entity("Office.DAL.Entity.ProjectManager", b =>
-                {
-                    b.Navigation("Projects");
-                });
-
             modelBuilder.Entity("Office.DAL.Entity.HrManager", b =>
                 {
                     b.Navigation("Workers");
+                });
+
+            modelBuilder.Entity("Office.DAL.Entity.ProjectManager", b =>
+                {
+                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }
