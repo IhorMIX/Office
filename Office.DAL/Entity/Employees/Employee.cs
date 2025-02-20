@@ -13,9 +13,8 @@ public class Employee : BaseEmployee
     public bool Status { get; set; }
     
     public int OutOfOfficeBalance  { get; set; }
-    
-    public HrManager HrManager { get; set; } = null!;
-    public int HrManagerId { get; set; }
+    public HrManager? HrManager { get; set; }
+    public int? HrManagerId { get; set; }
     
     public ICollection<LeaveRequest> LeaveRequests { get; set; } = null!;
     public ICollection<Project> Projects { get; set; } = null!;
