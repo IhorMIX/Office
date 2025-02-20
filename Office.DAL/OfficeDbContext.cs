@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Office.DAL.Entity;
 using Office.DAL.Entity.Employees;
 using Office.DAL.Entity.Selections;
+using Office.DAL.Helpers;
 
 namespace Office.DAL;
 
@@ -28,9 +29,34 @@ public class OfficeDbContext : DbContext
     public DbSet<BaseManager> Managers { get; set; }
 
     public DbSet<AuthorizationInfo> AuthorizationInfos { get; set; }
-    
+    public DbSet<Admin> Admins { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Admin>().HasData(
+            new Admin
+            {
+                Id = 1,
+                Login = "admin",
+                Password = "AN5AFuQC7N/pcMlzyU94dTF0oSfUx0+aHxY+mjwG5mojcJ0q4zOUqI6lXGlxSwMo5Q==",
+                FullName = "ADMIN",
+                isDeactivated = false,
+            });
+        
+        modelBuilder.Entity<Position>().HasData(
+            new Position { Id = 1, Name = "Backend Developer" },
+            new Position { Id = 2, Name = "Frontend Developer" },
+            new Position { Id = 3, Name = "QA Engineer" },
+            new Position { Id = 4, Name = "UI/UX Designer" }
+        );
+
+        modelBuilder.Entity<Subdivision>().HasData(
+            new Subdivision { Id = 1, Name = "Development" },
+            new Subdivision { Id = 2, Name = "Data" },
+            new Subdivision { Id = 3, Name = "Support" },
+            new Subdivision { Id = 4, Name = "Security" },
+            new Subdivision { Id = 5, Name = "QA" }
+        );
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OfficeDbContext).Assembly);
     }
 }

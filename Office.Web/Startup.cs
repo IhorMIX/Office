@@ -1,6 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
+using Office.BLL.Helpers;
+using Office.BLL.Services;
+using Office.BLL.Services.Interfaces;
 using Office.DAL;
+using Office.DAL.Repositories;
+using Office.DAL.Repositories.Intefaces;
 using Office.Web.Helpers;
 
 namespace Office.Web;
@@ -19,6 +24,13 @@ public class Startup(IConfiguration configuration)
 
         services.AddDbContext<OfficeDbContext>(options =>
             options.UseSqlServer(connectionString));
+        
+        services.AddAutoMapper(typeof(Startup));
+
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
+
+        services.AddScoped<IAuthService, AuthService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -38,7 +50,8 @@ public class Startup(IConfiguration configuration)
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseStaticFiles();
-        
+        var hashedPassword = PasswordHelper.HashPassword("admin");
+        Console.WriteLine($"Хеш пароля: {hashedPassword}");
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Office.DAL.Migrations
 {
     /// <inheritdoc />
@@ -72,6 +74,8 @@ namespace Office.DAL.Migrations
                     Login = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AuthorizationInfoId = table.Column<int>(type: "int", nullable: false),
+                    isDeactivated = table.Column<bool>(type: "bit", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
                     PositionId = table.Column<int>(type: "int", nullable: true),
                     SubdivisionId = table.Column<int>(type: "int", nullable: true),
@@ -233,6 +237,34 @@ namespace Office.DAL.Migrations
                         principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "BaseEmployees",
+                columns: new[] { "Id", "AuthorizationInfoId", "Discriminator", "FullName", "Login", "Password", "isDeactivated" },
+                values: new object[] { 1, 0, "Admin", "ADMIN", "admin", "AN5AFuQC7N/pcMlzyU94dTF0oSfUx0+aHxY+mjwG5mojcJ0q4zOUqI6lXGlxSwMo5Q==", false });
+
+            migrationBuilder.InsertData(
+                table: "Positions",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Backend Developer" },
+                    { 2, "Frontend Developer" },
+                    { 3, "QA Engineer" },
+                    { 4, "UI/UX Designer" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Subdivisions",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Development" },
+                    { 2, "Data" },
+                    { 3, "Support" },
+                    { 4, "Security" },
+                    { 5, "QA" }
                 });
 
             migrationBuilder.CreateIndex(
