@@ -4,7 +4,7 @@ using Office.DAL.Entity.Employees;
 using Office.DAL.Entity.Selections;
 using Office.Web.Models;
 
-namespace Office.Web.Controllers.MapperConfiguration;
+namespace Office.Web.MapperConfiguration;
 
 public class MapperModelsConfig : AutoMapper.Profile
 {
