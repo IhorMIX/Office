@@ -1,6 +1,6 @@
 namespace Office.BLL.Models;
 
-public class ProjectManagerModel : BaseModel
+public class ProjectManagerModel : BaseManagerModel
 {
     public ICollection<ProjectModel> Projects { get; set; } = null!;
 }
