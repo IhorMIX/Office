@@ -26,7 +26,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
         return managerModel;
     }
 
-    public async Task<BaseManagerModel> CreateProjectManagerAsync(int adminId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
+    public async Task<BaseManagerModel> CreateManagerAsync(int adminId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
     {
         var user = await _employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId && !(r is ProjectManager), cancellationToken);
         if (user is null)
