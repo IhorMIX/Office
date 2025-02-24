@@ -30,6 +30,8 @@ public class Startup(IConfiguration configuration)
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEmployeeService, EmployeeService>();
 
+        services.AddScoped<IManagerService, ManagerService>();
+
         services.AddScoped<IAuthService, AuthService>();
     }
 
@@ -50,8 +52,7 @@ public class Startup(IConfiguration configuration)
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseStaticFiles();
-        var hashedPassword = PasswordHelper.HashPassword("admin");
-        Console.WriteLine($"Хеш пароля: {hashedPassword}");
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

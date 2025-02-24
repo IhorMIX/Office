@@ -43,19 +43,21 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
             .Include(r => r.Projects)
             .AsQueryable();
     }
-    
     public async Task<BaseEmployee?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _officeDbContext.BaseEmployees
-            .Include(r => ((Employee)r).Subdivision)
-            .Include(r => ((Employee)r).Position)
-            .Include(r => ((Employee)r).Projects)
-            .Include(r => ((Employee)r).LeaveRequests)
-            .Include(r => ((Employee)r).HrManager)
-            .Include(r => ((HrManager)r).Workers)
-            .Include(r => ((ProjectManager)r).Projects).ThenInclude(r => r.ProjectType)
+        return  await _officeDbContext.BaseEmployees
+            .Include(r => (r as Employee)!.Subdivision)
+            .Include(r => (r as Employee)!.Position)
+            .Include(r => (r as Employee)!.Projects)
+            .Include(r => (r as Employee)!.LeaveRequests)
+            .Include(r => (r as Employee)!.HrManager)
+            .Include(r => (r as HrManager)!.Workers)
+            .Include(r => (r as ProjectManager)!.Projects)
+            .ThenInclude(p => p.ProjectType)
             .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
+
+
 
     public async Task<BaseEmployee> AddEmployeeAsync(BaseEmployee employee, CancellationToken cancellationToken = default)
     {

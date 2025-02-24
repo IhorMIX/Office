@@ -22,4 +22,12 @@ public class EmployeeController(IEmployeeService employeeService, IMapper mapper
             mapper.Map<EmployeeModel>(employeeCreateModel), cancellationToken);
         return Ok(mapper.Map<EmployeeViewModel>(employee));
     }
+    
+    [HttpGet("{employeeId:int}")]
+    public async Task<IActionResult> GetEmployee(int employeeId, CancellationToken cancellationToken = default)
+    {
+        var managerId = User.GetUserId();
+        var employees = await employeeService.GetByIdAsync(employeeId, cancellationToken);
+        return Ok(mapper.Map<EmployeeFullViewModel>(employees));
+    }
 }

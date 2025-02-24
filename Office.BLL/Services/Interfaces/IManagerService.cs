@@ -6,7 +6,7 @@ namespace Office.BLL.Services.Interfaces;
 
 public interface IManagerService
 {
-    Task<BaseManagerModel> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<BaseEmployee> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<BaseManagerModel> CreateManagerAsync(int adminId, BaseManagerModel managerModel, CancellationToken cancellationToken = default);
     Task<BaseManagerModel> UpdateManagerAsync(int managerId, BaseManagerModel managerModel, CancellationToken cancellationToken = default);
     Task DeleteManagerAsync(int userId, int managerId, CancellationToken cancellationToken = default);

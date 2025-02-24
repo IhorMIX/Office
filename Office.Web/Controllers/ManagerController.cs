@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Office.BLL.Exceptions;
 using Office.BLL.Models;
 using Office.BLL.Services.Interfaces;
 using Office.Web.Extensions;
@@ -11,7 +12,7 @@ namespace Office.Web.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class ManagerController(IManagerService managerService, IMapper mapper) : ControllerBase
+public class ManagerController(IManagerService managerService,IEmployeeService employeeService, IMapper mapper) : ControllerBase
 {
     [HttpGet("{managerId:int}")]
     public async Task<IActionResult> GetById(int managerId, CancellationToken cancellationToken = default)
