@@ -12,7 +12,7 @@ using Office.DAL;
 namespace Office.DAL.Migrations
 {
     [DbContext(typeof(OfficeDbContext))]
-    [Migration("20241216204800_Initial")]
+    [Migration("20250220222329_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Office.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0-preview.5.24306.3")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -105,6 +105,9 @@ namespace Office.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AuthorizationInfoId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(21)
@@ -121,6 +124,9 @@ namespace Office.DAL.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeactivated")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -235,6 +241,28 @@ namespace Office.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Positions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Backend Developer"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Frontend Developer"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "QA Engineer"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "UI/UX Designer"
+                        });
                 });
 
             modelBuilder.Entity("Office.DAL.Entity.Selections.ProjectType", b =>
@@ -269,6 +297,33 @@ namespace Office.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Subdivisions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Development"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Data"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Support"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Security"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "QA"
+                        });
                 });
 
             modelBuilder.Entity("Office.DAL.Entity.Employees.BaseManager", b =>
@@ -282,7 +337,7 @@ namespace Office.DAL.Migrations
                 {
                     b.HasBaseType("Office.DAL.Entity.BaseEmployee");
 
-                    b.Property<int>("HrManagerId")
+                    b.Property<int?>("HrManagerId")
                         .HasColumnType("int");
 
                     b.Property<int>("OutOfOfficeBalance")
@@ -306,11 +361,22 @@ namespace Office.DAL.Migrations
                     b.HasDiscriminator().HasValue("Employee");
                 });
 
-            modelBuilder.Entity("Office.DAL.Entity.ProjectManager", b =>
+            modelBuilder.Entity("Office.DAL.Entity.Admin", b =>
                 {
-                    b.HasBaseType("Office.DAL.Entity.BaseEmployee");
+                    b.HasBaseType("Office.DAL.Entity.Employees.BaseManager");
 
-                    b.HasDiscriminator().HasValue("ProjectManager");
+                    b.HasDiscriminator().HasValue("Admin");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AuthorizationInfoId = 0,
+                            FullName = "ADMIN",
+                            Login = "admin",
+                            Password = "AN5AFuQC7N/pcMlzyU94dTF0oSfUx0+aHxY+mjwG5mojcJ0q4zOUqI6lXGlxSwMo5Q==",
+                            isDeactivated = false
+                        });
                 });
 
             modelBuilder.Entity("Office.DAL.Entity.HrManager", b =>
@@ -318,6 +384,13 @@ namespace Office.DAL.Migrations
                     b.HasBaseType("Office.DAL.Entity.Employees.BaseManager");
 
                     b.HasDiscriminator().HasValue("HrManager");
+                });
+
+            modelBuilder.Entity("Office.DAL.Entity.ProjectManager", b =>
+                {
+                    b.HasBaseType("Office.DAL.Entity.Employees.BaseManager");
+
+                    b.HasDiscriminator().HasValue("ProjectManager");
                 });
 
             modelBuilder.Entity("EmployeeProject", b =>
@@ -407,8 +480,7 @@ namespace Office.DAL.Migrations
                     b.HasOne("Office.DAL.Entity.HrManager", "HrManager")
                         .WithMany("Workers")
                         .HasForeignKey("HrManagerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Office.DAL.Entity.Selections.Position", "Position")
                         .WithMany("Employees")
@@ -470,14 +542,14 @@ namespace Office.DAL.Migrations
                     b.Navigation("LeaveRequests");
                 });
 
-            modelBuilder.Entity("Office.DAL.Entity.ProjectManager", b =>
-                {
-                    b.Navigation("Projects");
-                });
-
             modelBuilder.Entity("Office.DAL.Entity.HrManager", b =>
                 {
                     b.Navigation("Workers");
+                });
+
+            modelBuilder.Entity("Office.DAL.Entity.ProjectManager", b =>
+                {
+                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }
