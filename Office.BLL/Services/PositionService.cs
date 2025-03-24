@@ -37,16 +37,20 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
         if (positionDb is not null)
         {
             if (positionDb.Name == positionModel.Name)
-                throw new AlreadyPositionException("Position is already used by another employee");
+                throw new AlreadyPositionException("Position is already created");
         }
         
         positionDb = await _positionRepository.CreatePositionAsync(_mapper.Map<Position>(positionModel), cancellationToken);
         return _mapper.Map<PositionModel>(await _positionRepository.GetByIdAsync(positionDb.Id, cancellationToken));
     }
 
-    public Task DeletePositionAsync(PositionModel position, CancellationToken cancellationToken = default)
+    public async Task DeletePositionAsync(int positionId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var positionDb = await _positionRepository.GetByIdAsync(positionId, cancellationToken);
+        
+        if (positionDb is null)
+            throw new PositionNotFoundException($"Position with Id {positionId} not found");
+        await _positionRepository.DeletePositionAsync(positionDb, cancellationToken);
     }
 
     public Task UpdatePositionAsync(PositionModel position, CancellationToken cancellationToken = default)
