@@ -2,6 +2,7 @@ namespace Office.DAL.Entity.Enums;
 
 public enum LeaveRequestStatus
 {
-    Submit = default,
+    New = default,
+    Submit,
     Cancel
 }
