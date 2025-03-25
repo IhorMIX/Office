@@ -12,12 +12,9 @@ namespace Office.BLL.Services;
 
 public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapper) : IManagerService
 {
-    private readonly IEmployeeRepository _employeeRepository = employeeRepository;
-    private readonly IMapper _mapper = mapper;
-    
     public async Task<BaseEmployee> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var managerDb = await _employeeRepository.GetByIdAsync(id, cancellationToken);
+        var managerDb = await employeeRepository.GetByIdAsync(id, cancellationToken);
         
         if (managerDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {id} not found");
@@ -26,11 +23,11 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<BaseManagerModel> CreateManagerAsync(int adminId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
     {
-        var user = await _employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId && !(r is ProjectManager), cancellationToken);
+        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId && !(r is ProjectManager), cancellationToken);
         if (user is null)
             throw new ManagerException("Invalid manager type");
         
-        var managerDb = await _employeeRepository.GetAll().FirstOrDefaultAsync(i => i.Login == managerModel.Login, cancellationToken);
+        var managerDb = await employeeRepository.GetAll().FirstOrDefaultAsync(i => i.Login == managerModel.Login, cancellationToken);
         if (managerDb is not null)
         {
             if (managerDb.Login == managerModel.Login)
@@ -41,29 +38,29 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
         switch (managerModel)
         {
             case ProjectManagerModel:
-                manager = _mapper.Map<ProjectManager>(managerModel);
+                manager = mapper.Map<ProjectManager>(managerModel);
                 break;
             case HrManagerModel:
-                manager = _mapper.Map<HrManager>(managerModel);
+                manager = mapper.Map<HrManager>(managerModel);
                 break;
             default:
                 throw new Exception();
         }
         
         manager.Password = PasswordHelper.HashPassword(manager.Password);
-        var addedManager = await _employeeRepository.AddEmployeeAsync(manager, cancellationToken);
-        return _mapper.Map<BaseManagerModel>(addedManager);
+        var addedManager = await employeeRepository.AddEmployeeAsync(manager, cancellationToken);
+        return mapper.Map<BaseManagerModel>(addedManager);
     }
 
     public async Task<BaseManagerModel> UpdateManagerAsync(int managerId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
     {
-        var updater = await _employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager), cancellationToken);
+        var updater = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager), cancellationToken);
         if (updater is null)
             throw new ManagerException("Invalid manager type");
 
         if (updater is Admin || (updater is BaseManager && updater.Id == managerModel.Id))
         {
-            var managerDb = await _employeeRepository.GetByIdAsync(managerModel.Id, cancellationToken);
+            var managerDb = await employeeRepository.GetByIdAsync(managerModel.Id, cancellationToken);
             
             foreach (var propertyMap in ReflectionHelper.WidgetUtil<BaseManagerModel, BaseManager>.PropertyMap)
             {
@@ -83,8 +80,8 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
                 ? managerDb.Password
                 : PasswordHelper.HashPassword(managerModel.Password);
                 
-            var updatedManager = await _employeeRepository.UpdateEmployeeAsync(managerDb, cancellationToken);
-            return _mapper.Map<BaseManagerModel>(updatedManager);
+            var updatedManager = await employeeRepository.UpdateEmployeeAsync(managerDb, cancellationToken);
+            return mapper.Map<BaseManagerModel>(updatedManager);
         }
         throw new ManagerException("Invalid manager type");
     }
@@ -94,44 +91,44 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
         if (userId == managerId)
             throw new Exception("You can't delete yourself");
             
-        var user = await _employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == userId && !(r is ProjectManager), cancellationToken);
+        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == userId && !(r is ProjectManager), cancellationToken);
         if (user is null)
             throw new ManagerException("Invalid manager type");
         
-        var managerDb = await _employeeRepository.GetByIdAsync(managerId, cancellationToken);
+        var managerDb = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
         if (managerDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {managerId} not found");
 
-        await _employeeRepository.DeleteEmployeeAsync(managerDb, cancellationToken);
+        await employeeRepository.DeleteEmployeeAsync(managerDb, cancellationToken);
     }
 
     public async Task<List<BaseManagerModel>> GetAll(int adminId, CancellationToken cancellationToken = default)
     {
-        var user = await _employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new ManagerException("Invalid manager type");
         
-        var managersDb = await _employeeRepository.GetAllManagers().ToListAsync(cancellationToken);
-        return _mapper.Map<List<BaseManagerModel>>(managersDb);
+        var managersDb = await employeeRepository.GetAllManagers().ToListAsync(cancellationToken);
+        return mapper.Map<List<BaseManagerModel>>(managersDb);
     }
 
     public async Task<List<HrManagerModel>> GetHrManagers(int adminId, CancellationToken cancellationToken = default)
     {
-        var user = await _employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new ManagerException("Invalid manager type");
         
-        var managersDb = await _employeeRepository.GetAllHrManagers().ToListAsync(cancellationToken);
-        return _mapper.Map<List<HrManagerModel>>(managersDb);
+        var managersDb = await employeeRepository.GetAllHrManagers().ToListAsync(cancellationToken);
+        return mapper.Map<List<HrManagerModel>>(managersDb);
     }
 
     public async Task<List<ProjectManagerModel>> GetProjectManagers(int adminId, CancellationToken cancellationToken = default)
     {
-        var user = await _employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new ManagerException("Invalid manager type");
         
-        var managersDb = await _employeeRepository.GetAllProjectManagers().ToListAsync(cancellationToken);
-        return _mapper.Map<List<ProjectManagerModel>>(managersDb);
+        var managersDb = await employeeRepository.GetAllProjectManagers().ToListAsync(cancellationToken);
+        return mapper.Map<List<ProjectManagerModel>>(managersDb);
     }
 }

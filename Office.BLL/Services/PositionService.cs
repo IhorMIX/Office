@@ -13,9 +13,6 @@ namespace Office.BLL.Services;
 
 public class PositionService(IPositionRepository positionRepository, IMapper mapper, IEmployeeRepository employeeRepository) : IPositionService
 {
-    private readonly IPositionRepository _positionRepository = positionRepository;
-    private readonly IMapper _mapper = mapper;
-    private readonly IEmployeeRepository _employeeRepository = employeeRepository;
     public async Task<PositionModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var positionDb = await positionRepository.GetByIdAsync(id, cancellationToken);
@@ -29,28 +26,28 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
 
     public async Task<PositionModel> CreatePositionAsync(PositionModel positionModel,int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await _employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new EmployeeNotFoundException($"Manager with Id {managerId} not found");
         
-        var positionDb = await _positionRepository.GetAll().FirstOrDefaultAsync(i => i.Name == positionModel.Name, cancellationToken);
+        var positionDb = await positionRepository.GetAll().FirstOrDefaultAsync(i => i.Name == positionModel.Name, cancellationToken);
         if (positionDb is not null)
         {
             if (positionDb.Name == positionModel.Name)
                 throw new AlreadyPositionException("Position is already created");
         }
         
-        positionDb = await _positionRepository.CreatePositionAsync(_mapper.Map<Position>(positionModel), cancellationToken);
-        return _mapper.Map<PositionModel>(await _positionRepository.GetByIdAsync(positionDb.Id, cancellationToken));
+        positionDb = await positionRepository.CreatePositionAsync(mapper.Map<Position>(positionModel), cancellationToken);
+        return mapper.Map<PositionModel>(await positionRepository.GetByIdAsync(positionDb.Id, cancellationToken));
     }
 
     public async Task DeletePositionAsync(int positionId, CancellationToken cancellationToken = default)
     {
-        var positionDb = await _positionRepository.GetByIdAsync(positionId, cancellationToken);
+        var positionDb = await positionRepository.GetByIdAsync(positionId, cancellationToken);
         
         if (positionDb is null)
             throw new PositionNotFoundException($"Position with Id {positionId} not found");
-        await _positionRepository.DeletePositionAsync(positionDb, cancellationToken);
+        await positionRepository.DeletePositionAsync(positionDb, cancellationToken);
     }
 
     public Task UpdatePositionAsync(PositionModel position, CancellationToken cancellationToken = default)
