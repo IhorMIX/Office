@@ -32,9 +32,14 @@ public class Startup(IConfiguration configuration)
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IManagerService, ManagerService>();
+        
         services.AddScoped<IAuthService, AuthService>();
+        
         services.AddScoped<IPositionService, PositionService>();
         services.AddScoped<IPositionRepository, PositionRepository>();
+        
+        services.AddScoped<ISubdivisionService, SubdivisionService>();
+        services.AddScoped<ISubdivisionRepository, SubdivisionRepository>();
         
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>

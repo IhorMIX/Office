@@ -72,6 +72,9 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<PositionCreateModel, PositionModel>().ReverseMap();
         
         CreateMap<Subdivision, SubdivisionModel>().ReverseMap();
+        CreateMap<SubdivisionModel, SubdivisionViewModel>().ReverseMap();
+        CreateMap<SubdivisionCreateModel, SubdivisionModel>().ReverseMap();
+        
         CreateMap<SubdivisionModel, SelectionViewModel>().ReverseMap();
         CreateMap<PositionModel, SelectionViewModel>().ReverseMap();
     }

@@ -28,13 +28,13 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
         if (creator is null)
-            throw new EmployeeNotFoundException($"Manager with Id {managerId} not found");
+            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
         
         var positionDb = await positionRepository.GetAll().FirstOrDefaultAsync(i => i.Name == positionModel.Name, cancellationToken);
         if (positionDb is not null)
         {
             if (positionDb.Name == positionModel.Name)
-                throw new AlreadyPositionException("Position is already created");
+                throw new AlreadyDataException("Position is already created");
         }
         
         positionDb = await positionRepository.CreatePositionAsync(mapper.Map<Position>(positionModel), cancellationToken);

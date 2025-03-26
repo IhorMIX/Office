@@ -12,7 +12,7 @@ namespace Office.Web.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class PositionController(IManagerService managerService, IEmployeeService employeeService,IPositionService positionService, IMapper mapper)
+public class PositionController(IPositionService positionService, IMapper mapper)
     : ControllerBase
 {
     [HttpGet("{positionId:int}")]
