@@ -14,7 +14,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 {
     public async Task<BaseEmployee> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var managerDb = await employeeRepository.GetByIdAsync(id, cancellationToken);
+        var managerDb = await employeeRepository.GetManagerByIdAsync(id, cancellationToken);
         
         if (managerDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {id} not found");
@@ -85,22 +85,26 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
         }
         throw new ManagerException("Invalid manager type");
     }
-
-    public async Task DeleteManagerAsync(int userId, int managerId, CancellationToken cancellationToken = default)
+    //removes just employees and manager
+    public async Task DeleteManagerAsync(int managerId, int adminId, CancellationToken cancellationToken = default)
     {
-        if (userId == managerId)
+        if (managerId == adminId)
             throw new Exception("You can't delete yourself");
-            
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == userId && !(r is ProjectManager), cancellationToken);
-        if (user is null)
-            throw new ManagerException("Invalid manager type");
+        
+        var adminUser = await employeeRepository.GetAllManagers()
+            .SingleOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
+    
+        if (adminUser is null)
+            throw new NotPermissionException("You don't have permissions");
         
         var managerDb = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
+    
         if (managerDb is null)
-            throw new EmployeeNotFoundException($"Employee with Id {managerId} not found");
-
+            throw new EmployeeNotFoundException($"Manager with Id {managerId} not found");
+        
         await employeeRepository.DeleteEmployeeAsync(managerDb, cancellationToken);
     }
+
 
     public async Task<List<BaseManagerModel>> GetAll(int adminId, CancellationToken cancellationToken = default)
     {

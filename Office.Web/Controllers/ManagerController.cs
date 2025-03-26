@@ -21,7 +21,7 @@ public class ManagerController(IManagerService managerService,IEmployeeService e
         var manager = await managerService.GetByIdAsync(managerId, cancellationToken);
         return Ok(mapper.Map<ManagerDetailViewModel>(manager));
     }
-    
+        
     [HttpPost("project-manager")]
     public async Task<IActionResult> CreateProjectManager([FromBody] ManagerCreateModel manager,
         CancellationToken cancellationToken)
@@ -54,7 +54,7 @@ public class ManagerController(IManagerService managerService,IEmployeeService e
     public async Task<IActionResult> DeleteManager(int managerId, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
-        await managerService.DeleteManagerAsync(adminId, managerId, cancellationToken);
+        await managerService.DeleteManagerAsync(managerId, adminId, cancellationToken);
         return Ok();
     }
     

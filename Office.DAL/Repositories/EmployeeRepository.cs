@@ -7,11 +7,9 @@ namespace Office.DAL.Repositories;
 
 public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepository
 {
-    private readonly OfficeDbContext _officeDbContext = officeDbContext;
-
     public IQueryable<BaseEmployee> GetAll()
     {
-        return _officeDbContext.BaseEmployees
+        return officeDbContext.BaseEmployees
             .Include(i=>((Employee)i).Position)
             .Include(r => ((Employee)r).Subdivision)
             .AsQueryable();
@@ -19,13 +17,13 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
 
     public IQueryable<BaseManager> GetAllManagers()
     {
-        return _officeDbContext.Managers.Include(i => i.ApprovalRequests)
+        return officeDbContext.Managers.Include(i => i.ApprovalRequests)
             .AsQueryable();
     }
     
     public IQueryable<Employee> GetAllEmployees()
     {
-        return _officeDbContext.Employees
+        return officeDbContext.Employees
             .Include(r => r.Position)
             .Include(r => r.Subdivision)
             .Include(r => r.HrManager)
@@ -33,19 +31,19 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
     }
     public IQueryable<HrManager> GetAllHrManagers()
     {
-        return _officeDbContext.HrManagers
+        return officeDbContext.HrManagers
             .Include(i => i.Workers)
             .AsQueryable();
     }
     public IQueryable<ProjectManager> GetAllProjectManagers()
     {
-        return _officeDbContext.ProjectManagers
+        return officeDbContext.ProjectManagers
             .Include(r => r.Projects)
             .AsQueryable();
     }
     public async Task<BaseEmployee?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return  await _officeDbContext.BaseEmployees
+        return  await officeDbContext.BaseEmployees
             .Include(r => (r as Employee)!.Subdivision)
             .Include(r => (r as Employee)!.Position)
             .Include(r => (r as Employee)!.Projects)
@@ -56,26 +54,34 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
             .ThenInclude(p => p.ProjectType)
             .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
-
-
+    
+    public async Task<BaseEmployee?> GetManagerByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await officeDbContext.BaseEmployees
+            .Where(e => e is HrManager || e is ProjectManager)
+            .Include(r => (r as HrManager)!.Workers)
+            .Include(r => (r as ProjectManager)!.Projects)
+            .ThenInclude(p => p.ProjectType)
+            .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
 
     public async Task<BaseEmployee> AddEmployeeAsync(BaseEmployee employee, CancellationToken cancellationToken = default)
     {
-        var employeeDb = await _officeDbContext.BaseEmployees.AddAsync(employee,cancellationToken);
-        await _officeDbContext.SaveChangesAsync(cancellationToken);
+        var employeeDb = await officeDbContext.BaseEmployees.AddAsync(employee,cancellationToken);
+        await officeDbContext.SaveChangesAsync(cancellationToken);
         return employeeDb.Entity;
     }
 
     public async Task DeleteEmployeeAsync(BaseEmployee employee, CancellationToken cancellationToken = default)
     {
-        _officeDbContext.BaseEmployees.Remove(employee);
-        await _officeDbContext.SaveChangesAsync(cancellationToken);
+        officeDbContext.BaseEmployees.Remove(employee);
+        await officeDbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<BaseEmployee> UpdateEmployeeAsync(BaseEmployee employee, CancellationToken cancellationToken = default)
     {
-        var employeeDb = _officeDbContext.BaseEmployees.Update(employee);
-        await _officeDbContext.SaveChangesAsync(cancellationToken);
+        var employeeDb = officeDbContext.BaseEmployees.Update(employee);
+        await officeDbContext.SaveChangesAsync(cancellationToken);
         return employeeDb.Entity;
     }
 }

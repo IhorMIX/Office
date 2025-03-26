@@ -15,7 +15,7 @@ namespace Office.Web.Controllers;
 public class PositionController(IManagerService managerService, IEmployeeService employeeService,IPositionService positionService, IMapper mapper)
     : ControllerBase
 {
-    [HttpGet("{position:int}")]
+    [HttpGet("{positionId:int}")]
     public async Task<IActionResult> GetById(int positionId, CancellationToken cancellationToken = default)
     {
         var position = await positionService.GetByIdAsync(positionId, cancellationToken);

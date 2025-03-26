@@ -6,8 +6,6 @@ namespace Office.DAL.Repositories;
 
 public class SubdivisionRepository(OfficeDbContext officeDbContext) : ISubdivisionRepository
 {
-    private readonly OfficeDbContext _officeDbContext = officeDbContext;
-
     public IQueryable<Subdivision> GetAll()
     {
         return officeDbContext.Subdivisions.AsQueryable();
@@ -33,7 +31,7 @@ public class SubdivisionRepository(OfficeDbContext officeDbContext) : ISubdivisi
 
     public async Task UpdateSubdivisionAsync(Subdivision subdivision, CancellationToken cancellationToken = default)
     {
-        _officeDbContext.Subdivisions.Update(subdivision);
-        await _officeDbContext.SaveChangesAsync(cancellationToken);
+        officeDbContext.Subdivisions.Update(subdivision);
+        await officeDbContext.SaveChangesAsync(cancellationToken);
     }
 }

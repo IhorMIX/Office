@@ -18,7 +18,7 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
         var positionDb = await positionRepository.GetByIdAsync(id, cancellationToken);
         
         if (positionDb is null)
-            throw new PositionNotFoundException($"Employee with Id {id} not found");
+            throw new PositionNotFoundException($"Position with Id {id} not found");
         
         var position = mapper.Map<PositionModel>(positionDb);
         return position;
