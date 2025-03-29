@@ -32,7 +32,8 @@ public class SubdivisionController(ISubdivisionService subdivisionService, IMapp
     [HttpDelete("{subdivisionId:int}")]
     public async Task<IActionResult> DeletePosition(int subdivisionId, CancellationToken cancellationToken = default)
     {
-        await subdivisionService.DeleteSubdivisionAsync(subdivisionId, cancellationToken);
+        var managerId = User.GetUserId();
+        await subdivisionService.DeleteSubdivisionAsync(subdivisionId,managerId,cancellationToken);
         return Ok();
     }
 } 

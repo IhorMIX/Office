@@ -22,7 +22,7 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
         return absenceReason;
     }
 
-    public async Task<AbsenceReason> CreatePositionAsync(string absenсeDesc, int managerId, CancellationToken cancellationToken = default)
+    public async Task<AbsenceReason> CreateAbsenceReasonAsync(string absenсeDesc, int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
         if (creator is null)
@@ -43,8 +43,12 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
         return absenceReason;
     }
 
-    public async Task DeletePositionAsync(int absenceReasonId, CancellationToken cancellationToken = default)
+    public async Task DeleteAbsenceReasonAsync(int absenceReasonId, int managerId, CancellationToken cancellationToken = default)
     {
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
+            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
+        
         var absenceReasonDb = await absenceReasonRepository.GetByIdAsync(absenceReasonId, cancellationToken);
         
         if (absenceReasonDb is null)
@@ -52,7 +56,7 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
         await absenceReasonRepository.DeleteAbsenceReasonAsync(absenceReasonDb, cancellationToken);
     }
 
-    public Task UpdatePositionAsync(AbsenceReasonModel position, CancellationToken cancellationToken = default)
+    public Task UpdateAbsenceReasonAsync(AbsenceReasonModel absenceReasonModel, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

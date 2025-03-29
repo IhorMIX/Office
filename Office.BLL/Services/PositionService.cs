@@ -41,8 +41,12 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
         return mapper.Map<PositionModel>(await positionRepository.GetByIdAsync(positionDb.Id, cancellationToken));
     }
 
-    public async Task DeletePositionAsync(int positionId, CancellationToken cancellationToken = default)
+    public async Task DeletePositionAsync(int positionId,int managerId, CancellationToken cancellationToken = default)
     {
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
+            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
+        
         var positionDb = await positionRepository.GetByIdAsync(positionId, cancellationToken);
         
         if (positionDb is null)

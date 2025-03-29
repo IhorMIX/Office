@@ -33,7 +33,8 @@ public class PositionController(IPositionService positionService, IMapper mapper
     [HttpDelete("{positionId:int}")]
     public async Task<IActionResult> DeletePosition(int positionId, CancellationToken cancellationToken = default)
     {
-        await positionService.DeletePositionAsync(positionId, cancellationToken);
+        var managerId = User.GetUserId();
+        await positionService.DeletePositionAsync(positionId,managerId, cancellationToken);
         return Ok();
     }
 } 

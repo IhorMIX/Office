@@ -39,8 +39,12 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
         return mapper.Map<SubdivisionModel>(await subdivisionRepository.GetByIdAsync(subdivision.Id, cancellationToken));
     }
     
-    public async Task DeleteSubdivisionAsync(int subdivisionId, CancellationToken cancellationToken = default)
+    public async Task DeleteSubdivisionAsync(int subdivisionId, int managerId,CancellationToken cancellationToken = default)
     {
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
+            
+            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
         var subdivisionDb = await subdivisionRepository.GetByIdAsync(subdivisionId, cancellationToken);
         
         if (subdivisionDb is null)

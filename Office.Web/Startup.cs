@@ -41,6 +41,9 @@ public class Startup(IConfiguration configuration)
         services.AddScoped<ISubdivisionService, SubdivisionService>();
         services.AddScoped<ISubdivisionRepository, SubdivisionRepository>();
         
+        services.AddScoped<IAbsenceReasonService, AbsenceReasonService>();
+        services.AddScoped<IAbsenceReasonRepository, AbsenceReasonRepository>();
+        
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
         {
