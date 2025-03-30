@@ -18,7 +18,7 @@ public class AbsenceReasonController(IAbsenceReasonService absenceReasonService,
     public async Task<IActionResult> GetById(int absenceReasonId, CancellationToken cancellationToken = default)
     {
         var absenceReason = await absenceReasonService.GetByIdAsync(absenceReasonId, cancellationToken);
-        return Ok(mapper.Map<PositionViewModel>(absenceReason));
+        return Ok(mapper.Map<AbsenceReasonViewModel>(absenceReason));
     }
 
     [HttpPost("create-absenceReason")]
