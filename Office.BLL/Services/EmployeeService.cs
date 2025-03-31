@@ -13,29 +13,25 @@ namespace Office.BLL.Services;
 
 public class EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper) : IEmployeeService
 {
-    private readonly IEmployeeRepository _employeeRepository = employeeRepository;
-    private readonly IMapper _mapper = mapper;
-
     public async Task<EmployeeModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var employeeDb = await _employeeRepository.GetAllEmployees()
-            .Include(e => e.Projects)
-            .ThenInclude(p => p.ProjectManager)
-            .SingleOrDefaultAsync(i => i.Id == id, cancellationToken);
-        
+        var employeeDb = await employeeRepository.GetAllEmployees()
+            .SingleOrDefaultAsync(e => e.Id == id, cancellationToken);
+    
         if (employeeDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {id} not found");
 
-        return _mapper.Map<EmployeeModel>(employeeDb);
+        return mapper.Map<EmployeeModel>(employeeDb);
     }
+
 
     public async Task<EmployeeModel> CreateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
     {
-        var creator = await _employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new EmployeeNotFoundException($"Manager with Id {managerId} not found");
         
-        var employeeDb = await _employeeRepository.GetAll().FirstOrDefaultAsync(i => i.Login == employeeModel.Login, cancellationToken);
+        var employeeDb = await employeeRepository.GetAll().FirstOrDefaultAsync(i => i.Login == employeeModel.Login, cancellationToken);
         if (employeeDb is not null)
         {
             if (employeeDb.Login == employeeModel.Login)
@@ -45,32 +41,37 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
         employeeModel.Password = PasswordHelper.HashPassword(employeeModel.Password);
         if (creator is HrManager)
             employeeModel.HrManagerId = creator.Id;
-        employeeDb = await _employeeRepository.AddEmployeeAsync(_mapper.Map<Employee>(employeeModel), cancellationToken);
-        return _mapper.Map<EmployeeModel>(await _employeeRepository.GetByIdAsync(employeeDb.Id, cancellationToken));
+        employeeDb = await employeeRepository.AddEmployeeAsync(mapper.Map<Employee>(employeeModel), cancellationToken);
+        return mapper.Map<EmployeeModel>(await employeeRepository.GetByIdAsync(employeeDb.Id, cancellationToken));
     }
 
     public Task<EmployeeModel> UpdateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
-
-    public async Task DeleteEmployeeAsync(int id, CancellationToken cancellationToken = default)
+    //removes just employees and manager
+    public async Task DeleteEmployeeAsync(int id, int managerId, CancellationToken cancellationToken = default)
     {
-        var employeeDb = await _employeeRepository.GetByIdAsync(id, cancellationToken);
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
+            throw new EmployeeNotFoundException($"Manager with Id {managerId} not found");
+        
+        var employeeDb = await employeeRepository.GetByIdAsync(id, cancellationToken);
         
         if (employeeDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {id} not found");
 
-        await _employeeRepository.DeleteEmployeeAsync(employeeDb, cancellationToken);
+        await employeeRepository.DeleteEmployeeAsync(employeeDb, cancellationToken);
     }
-
-    public Task<List<EmployeeModel>> GetEmployeesAsync(int managerId, CancellationToken cancellationToken = default)
+    public async Task<List<EmployeeModel>> GetAllAsync(int managerId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
-    }
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && !(r is Employee)).SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
+            throw new EmployeeNotFoundException($"Manager with Id {managerId} not found");
 
-    public Task<List<EmployeeModel>> GetAllAsync(int managerId, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
+        var employees = await employeeRepository.GetAllEmployees()
+            .ToListAsync(cancellationToken);
+        
+        return mapper.Map<List<EmployeeModel>>(employees.OrderBy(r=>r.Status));
     }
 }

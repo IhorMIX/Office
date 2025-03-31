@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Office.DAL.Entity;
 using Office.DAL.Entity.Employees;
 using Office.DAL.Entity.Selections;
-using Office.DAL.Helpers;
 
 namespace Office.DAL;
 
@@ -37,7 +36,7 @@ public class OfficeDbContext : DbContext
             {
                 Id = 1,
                 Login = "admin",
-                Password = "AN5AFuQC7N/pcMlzyU94dTF0oSfUx0+aHxY+mjwG5mojcJ0q4zOUqI6lXGlxSwMo5Q==",
+                Password = "ANQE9vuNoOS6J1Af8yk/a4nBg++OJRyeEc87sqXiqDwKdFgXGKGZqmbw104u/9R4EA==",
                 FullName = "ADMIN",
                 isDeactivated = false,
             });

@@ -67,8 +67,26 @@ public class MapperModelsConfig : AutoMapper.Profile
             .ForMember(dest => dest.Employee, opt => opt.Ignore())
             .ReverseMap();
 
+        CreateMap<SelectionCreateModel, PositionModel>();
         CreateMap<Position, PositionModel>().ReverseMap();
+        CreateMap<SelectionViewModel, Position>()
+            .ForMember(m => m.Employees, o => o.Ignore())
+            .ReverseMap();
+        
+        CreateMap<SelectionCreateModel, SubdivisionModel>();
         CreateMap<Subdivision, SubdivisionModel>().ReverseMap();
+        CreateMap<SelectionViewModel, Subdivision>()
+            .ForMember(m => m.Employees, o => o.Ignore())
+            .ReverseMap();
+        
+        CreateMap<SelectionViewModel, AbsenceReason>()
+            .ForMember(m => m.LeaveRequests, o => o.Ignore())
+            .ReverseMap();
+        
+        CreateMap<AbsenceReason, AbsenceReasonModel>().ReverseMap();
+        CreateMap<AbsenceReasonModel, AbsenceReasonViewModel>().ReverseMap();
+        CreateMap<AbsenceReasonCreateModel, SubdivisionModel>().ReverseMap();
+        
         CreateMap<SubdivisionModel, SelectionViewModel>().ReverseMap();
         CreateMap<PositionModel, SelectionViewModel>().ReverseMap();
     }
