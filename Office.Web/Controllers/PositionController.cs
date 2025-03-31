@@ -19,15 +19,15 @@ public class PositionController(IPositionService positionService, IMapper mapper
     public async Task<IActionResult> GetById(int positionId, CancellationToken cancellationToken = default)
     {
         var position = await positionService.GetByIdAsync(positionId, cancellationToken);
-        return Ok(mapper.Map<PositionViewModel>(position));
+        return Ok(mapper.Map<SelectionViewModel>(position));
     }
 
     [HttpPost("create-position")]
-    public async Task<IActionResult> CreatePosition(PositionCreateModel positionCreateModel, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreatePosition(SelectionCreateModel positionCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
         var result = await positionService.CreatePositionAsync(mapper.Map<PositionModel>(positionCreateModel), adminId, cancellationToken);
-        return Ok(result);
+        return Ok(mapper.Map<SelectionViewModel>(result));
     }
     
     [HttpDelete("{positionId:int}")]

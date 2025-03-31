@@ -18,15 +18,15 @@ public class SubdivisionController(ISubdivisionService subdivisionService, IMapp
     public async Task<IActionResult> GetById(int subdivisionId, CancellationToken cancellationToken = default)
     {
         var subdivision = await subdivisionService.GetByIdAsync(subdivisionId, cancellationToken);
-        return Ok(mapper.Map<SubdivisionViewModel>(subdivision));
+        return Ok(mapper.Map<SelectionViewModel>(subdivision));
     }
 
     [HttpPost("create-subdivision")]
-    public async Task<IActionResult> CreatePosition(SubdivisionCreateModel subdivisionCreateModel, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreatePosition(SelectionCreateModel subdivisionCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
         var result = await subdivisionService.CreateSubdivisionAsync(mapper.Map<SubdivisionModel>(subdivisionCreateModel), adminId, cancellationToken);
-        return Ok(result);
+        return Ok(mapper.Map<SelectionViewModel>(result));
     }
     
     [HttpDelete("{subdivisionId:int}")]

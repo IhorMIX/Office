@@ -1,6 +1,6 @@
 namespace Office.Web.Models;
 
-public class SubdivisionCreateModel
+public class SelectionCreateModel
 {
     public string Name { get; set; } = null!;
 }
