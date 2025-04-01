@@ -16,7 +16,7 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
         var absenceReasonDb = await absenceReasonRepository.GetByIdAsync(id, cancellationToken);
         
         if (absenceReasonDb is null)
-            throw new AbsenceReasonNotFoundException($"Absence Reason with Id {id} not found");
+            throw new EntityNotFoundException($"Absence Reason with Id {id} not found");
         
         var absenceReason = mapper.Map<AbsenceReasonModel>(absenceReasonDb);
         return absenceReason;
@@ -52,7 +52,7 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
         var absenceReasonDb = await absenceReasonRepository.GetByIdAsync(absenceReasonId, cancellationToken);
         
         if (absenceReasonDb is null)
-            throw new AbsenceReasonNotFoundException($"Absence Reason with Id {absenceReasonId} not found");
+            throw new EntityNotFoundException($"Absence Reason with Id {absenceReasonId} not found");
         await absenceReasonRepository.DeleteAbsenceReasonAsync(absenceReasonDb, cancellationToken);
     }
 
