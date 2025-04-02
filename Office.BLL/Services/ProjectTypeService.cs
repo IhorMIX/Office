@@ -9,7 +9,7 @@ using Office.DAL.Repositories.Intefaces;
 
 namespace Office.BLL.Services;
 
-public class ProjectService(IProjectTypeRepository projectTypeRepository, IMapper mapper,IEmployeeRepository employeeRepository) : IProjectTypeService
+public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IMapper mapper,IEmployeeRepository employeeRepository) : IProjectTypeService
 {
     public async Task<ProjectTypeModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
