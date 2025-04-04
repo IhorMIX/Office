@@ -27,7 +27,7 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
         if (creator is null)
-            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
+            throw new EmployeeNotFoundException($"Admin or Project Manager with Id {managerId} not found");
         
         var projectTypeDb = await projectTypeRepository.GetAll().FirstOrDefaultAsync(i => i.Name == projectTypeModel.Name, cancellationToken);
         if (projectTypeDb is not null)
@@ -44,7 +44,7 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
         if (creator is null)
-            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
+            throw new EmployeeNotFoundException($"Admin or Project Manager with Id {managerId} not found");
         
         var projectTypeDb = await projectTypeRepository.GetByIdAsync(projectTypeId, cancellationToken);
         
