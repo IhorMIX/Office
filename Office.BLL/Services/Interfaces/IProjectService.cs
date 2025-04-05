@@ -10,4 +10,7 @@ public interface IProjectService: IBasicService<ProjectModel>
 
     Task<ProjectModel> UpdateProjectAsync(int projectManagerId, ProjectModel projectModel,
         CancellationToken cancellationToken = default);
+
+    Task AddEmployeesInProjectAsync(int projectManagerId, int projectId,
+        ICollection<int> employeeModelsIds, CancellationToken cancellationToken = default);
 }

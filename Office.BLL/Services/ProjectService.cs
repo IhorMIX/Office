@@ -49,4 +49,33 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
     {
         throw new NotImplementedException();
     }
+
+    public async Task AddEmployeesInProjectAsync(int projectManagerId, int projectId, ICollection<int> employeeModelsIds,
+        CancellationToken cancellationToken = default)
+    {
+        
+        var manager = await employeeRepository.GetAll()
+            .SingleOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
+                cancellationToken);
+        if (manager is null)
+            throw new EmployeeNotFoundException($"Manger or Admin with Id {projectManagerId} not found");
+        
+        var employees = await employeeRepository.GetAllEmployees().Include(r => r.Projects)
+            .Where(r => employeeModelsIds.Contains(r.Id)).ToListAsync(cancellationToken);
+
+        if (employees.Any())
+        {
+            var projectDb = await projectRepository.GetByIdAsync(projectId, cancellationToken);
+            if (projectDb is null)
+                throw new EntityNotFoundException($"Project with Id {projectId} not found");
+
+            projectDb.Employees = employees;
+
+            await projectRepository.UpdateProjectAsync(projectDb, cancellationToken);
+        }
+        else
+        {
+            throw new EmployeeNotFoundException($"Employees not found");
+        }
+    }
 }
