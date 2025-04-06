@@ -17,8 +17,8 @@ public class ProjectTypeController(IProjectTypeService projectTypeService, IMapp
     [HttpGet("{projectTypeId:int}")]
     public async Task<IActionResult> GetById(int projectTypeId, CancellationToken cancellationToken = default)
     {
-        var subdivision = await projectTypeService.GetByIdAsync(projectTypeId, cancellationToken);
-        return Ok(mapper.Map<SelectionViewModel>(subdivision));
+        var projectType = await projectTypeService.GetByIdAsync(projectTypeId, cancellationToken);
+        return Ok(mapper.Map<SelectionViewModel>(projectType));
     }
 
     [HttpPost("create-projectType")]

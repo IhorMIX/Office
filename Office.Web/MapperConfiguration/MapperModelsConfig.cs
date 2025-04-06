@@ -95,6 +95,13 @@ public class MapperModelsConfig : AutoMapper.Profile
             .ForMember(m => m.LeaveRequests, o => o.Ignore())
             .ReverseMap();
         
-        
+        CreateMap<Project, ProjectModel>()
+            .ReverseMap();
+        CreateMap<ProjectViewModel, Project>()
+            .ReverseMap();
+        CreateMap<ProjectViewModel, ProjectModel>()
+            .ReverseMap();
+        CreateMap<ProjectCreateModel, ProjectModel>()
+            .ReverseMap();
     }
 }
