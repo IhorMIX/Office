@@ -41,6 +41,9 @@ public class Startup(IConfiguration configuration)
         services.AddScoped<IProjectTypeService, ProjectTypeService>();
         services.AddScoped<IProjectTypeRepository, ProjectTypeRepository>();
         
+        services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        
         services.AddScoped<ISubdivisionService, SubdivisionService>();
         services.AddScoped<ISubdivisionRepository, SubdivisionRepository>();
         

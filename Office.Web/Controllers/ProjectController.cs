@@ -22,7 +22,7 @@ public class ProjectController(IProjectService projectService, IMapper mapper)
     }
 
     [HttpPost("create-project")]
-    public async Task<IActionResult> CreatePosition(ProjectCreateModel projectCreateModel, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreatePosition([FromBody] ProjectCreateModel projectCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
         var result = await projectService.CreateProjectAsync(mapper.Map<ProjectModel>(projectCreateModel), adminId, cancellationToken);
