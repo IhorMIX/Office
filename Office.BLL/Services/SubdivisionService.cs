@@ -16,7 +16,7 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
         var subdivisionDb = await subdivisionRepository.GetByIdAsync(id, cancellationToken);
         
         if (subdivisionDb is null)
-            throw new SubdivisionNotFoundException($"Subdivision with Id {id} not found");
+            throw new EntityNotFoundException($"Subdivision with Id {id} not found");
         
         var subdivision = mapper.Map<SubdivisionModel>(subdivisionDb);
         return subdivision;
@@ -48,7 +48,7 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
         var subdivisionDb = await subdivisionRepository.GetByIdAsync(subdivisionId, cancellationToken);
         
         if (subdivisionDb is null)
-            throw new SubdivisionNotFoundException($"Subdivision with Id {subdivisionId} not found");
+            throw new EntityNotFoundException($"Subdivision with Id {subdivisionId} not found");
         await subdivisionRepository.DeleteSubdivisionAsync(subdivisionDb, cancellationToken);
     }
 }

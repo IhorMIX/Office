@@ -69,25 +69,39 @@ public class MapperModelsConfig : AutoMapper.Profile
 
         CreateMap<SelectionCreateModel, PositionModel>();
         CreateMap<Position, PositionModel>().ReverseMap();
+        CreateMap<PositionModel, SelectionViewModel>().ReverseMap();
         CreateMap<SelectionViewModel, Position>()
             .ForMember(m => m.Employees, o => o.Ignore())
             .ReverseMap();
         
         CreateMap<SelectionCreateModel, SubdivisionModel>();
         CreateMap<Subdivision, SubdivisionModel>().ReverseMap();
+        CreateMap<SubdivisionModel, SelectionViewModel>().ReverseMap();
         CreateMap<SelectionViewModel, Subdivision>()
             .ForMember(m => m.Employees, o => o.Ignore())
             .ReverseMap();
         
-        CreateMap<SelectionViewModel, AbsenceReason>()
-            .ForMember(m => m.LeaveRequests, o => o.Ignore())
+        CreateMap<SelectionCreateModel, ProjectTypeModel>();
+        CreateMap<ProjectType, ProjectTypeModel>().ReverseMap();
+        CreateMap<ProjectTypeModel, SelectionViewModel>().ReverseMap();
+        CreateMap<SelectionViewModel, ProjectType>()
+            .ForMember(m => m.Projects, o => o.Ignore())
             .ReverseMap();
         
         CreateMap<AbsenceReason, AbsenceReasonModel>().ReverseMap();
         CreateMap<AbsenceReasonModel, AbsenceReasonViewModel>().ReverseMap();
-        CreateMap<AbsenceReasonCreateModel, SubdivisionModel>().ReverseMap();
+        CreateMap<AbsenceReasonCreateModel, AbsenceReasonModel>().ReverseMap();
+        CreateMap<SelectionViewModel, AbsenceReason>()
+            .ForMember(m => m.LeaveRequests, o => o.Ignore())
+            .ReverseMap();
         
-        CreateMap<SubdivisionModel, SelectionViewModel>().ReverseMap();
-        CreateMap<PositionModel, SelectionViewModel>().ReverseMap();
+        CreateMap<Project, ProjectModel>()
+            .ReverseMap();
+        CreateMap<ProjectViewModel, Project>()
+            .ReverseMap();
+        CreateMap<ProjectViewModel, ProjectModel>()
+            .ReverseMap();
+        CreateMap<ProjectCreateModel, ProjectModel>()
+            .ReverseMap();
     }
 }
