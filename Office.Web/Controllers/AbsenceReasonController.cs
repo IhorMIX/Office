@@ -22,11 +22,11 @@ public class AbsenceReasonController(IAbsenceReasonService absenceReasonService,
     }
 
     [HttpPost("create-absenceReason")]
-    public async Task<IActionResult> CreateAbsenceReason(SelectionCreateModel absenceReasonCreateModel, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreateAbsenceReason([FromBody] ReasonRequest reasonRequest, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
-        var result = await absenceReasonService.CreateAbsenceReasonAsync(absenceReasonCreateModel.Name, adminId, cancellationToken);
-        return Ok(mapper.Map<SelectionViewModel>(result));
+        var result = await absenceReasonService.CreateAbsenceReasonAsync(reasonRequest.ReasonDescription, adminId, cancellationToken);
+        return Ok(mapper.Map<AbsenceReasonViewModel>(result));
     }
     
     [HttpDelete("{absenceReasonId:int}")]

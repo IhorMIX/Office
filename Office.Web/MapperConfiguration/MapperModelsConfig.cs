@@ -17,6 +17,7 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<EmployeeViewModel, EmployeeModel>().ReverseMap();
         CreateMap<EmployeeCreateModel, EmployeeModel>().ReverseMap();
         CreateMap<EmployeeFullViewModel, EmployeeModel>().ReverseMap();
+        CreateMap<BaseEmployeeViewModel, EmployeeModel>().ReverseMap();
 
         CreateMap<BaseManager, BaseManagerModel>().ReverseMap();
         CreateMap<HrManager, HrManagerModel>().ReverseMap();
@@ -90,6 +91,8 @@ public class MapperModelsConfig : AutoMapper.Profile
         
         CreateMap<AbsenceReason, AbsenceReasonModel>().ReverseMap();
         CreateMap<AbsenceReasonModel, AbsenceReasonViewModel>().ReverseMap();
+        CreateMap<ReasonRequest, AbsenceReasonViewModel>().ReverseMap();
+        CreateMap<AbsenceReason, AbsenceReasonViewModel>().ReverseMap();
         CreateMap<AbsenceReasonCreateModel, AbsenceReasonModel>().ReverseMap();
         CreateMap<SelectionViewModel, AbsenceReason>()
             .ForMember(m => m.LeaveRequests, o => o.Ignore())
@@ -103,5 +106,24 @@ public class MapperModelsConfig : AutoMapper.Profile
             .ReverseMap();
         CreateMap<ProjectCreateModel, ProjectModel>()
             .ReverseMap();
+        
+        CreateMap<ApprovalRequest, ApprovalRequestModel>()
+            .ReverseMap();  
+        CreateMap<ApprovalRequestViewModel, ApprovalRequestModel>()
+            .ReverseMap();  
+        CreateMap<ApprovalRequestUpdateModel, ApprovalRequestModel>()
+            .ReverseMap(); 
+        
+        CreateMap<LeaveRequest, LeaveRequestModel>()
+            .ReverseMap();
+        CreateMap<LeaveRequestModel, LeaveRequestViewModel>()
+            .ReverseMap();
+        CreateMap<LeaveRequestFullViewModel, LeaveRequestModel>()
+            .ReverseMap();
+        CreateMap<LeaveRequestCreateModel, LeaveRequestModel>()
+            .ReverseMap();
+        CreateMap<LeaveRequestUpdateModel, LeaveRequestModel>()
+            .ReverseMap();
+
     }
 }

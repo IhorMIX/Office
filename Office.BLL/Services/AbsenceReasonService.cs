@@ -22,22 +22,22 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
         return absenceReason;
     }
 
-    public async Task<AbsenceReason> CreateAbsenceReasonAsync(string absenсeDesc, int managerId, CancellationToken cancellationToken = default)
+    public async Task<AbsenceReason> CreateAbsenceReasonAsync(string description, int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
         
-        var absenceReasonDb = await absenceReasonRepository.GetAll().FirstOrDefaultAsync(i => i.ReasonDescription == absenсeDesc, cancellationToken);
+        var absenceReasonDb = await absenceReasonRepository.GetAll().FirstOrDefaultAsync(i => i.ReasonDescription == description, cancellationToken);
         if (absenceReasonDb is not null)
         {
-            if (absenceReasonDb.ReasonDescription == absenсeDesc)
+            if (absenceReasonDb.ReasonDescription == description)
                 throw new AlreadyDataException("Absence Reason is already created");
         }
         
         var absenceReason  = await absenceReasonRepository.CreateAbsenceReason(new AbsenceReason()
         {
-            ReasonDescription = absenсeDesc,
+            ReasonDescription = description,
         }, cancellationToken);
 
         return absenceReason;

@@ -12,7 +12,7 @@ using Office.DAL;
 namespace Office.DAL.Migrations
 {
     [DbContext(typeof(OfficeDbContext))]
-    [Migration("20250220222329_Initial")]
+    [Migration("20250702170352_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -374,7 +374,7 @@ namespace Office.DAL.Migrations
                             AuthorizationInfoId = 0,
                             FullName = "ADMIN",
                             Login = "admin",
-                            Password = "AN5AFuQC7N/pcMlzyU94dTF0oSfUx0+aHxY+mjwG5mojcJ0q4zOUqI6lXGlxSwMo5Q==",
+                            Password = "ANQE9vuNoOS6J1Af8yk/a4nBg++OJRyeEc87sqXiqDwKdFgXGKGZqmbw104u/9R4EA==",
                             isDeactivated = false
                         });
                 });

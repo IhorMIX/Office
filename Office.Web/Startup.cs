@@ -49,6 +49,10 @@ public class Startup(IConfiguration configuration)
         
         services.AddScoped<IAbsenceReasonService, AbsenceReasonService>();
         services.AddScoped<IAbsenceReasonRepository, AbsenceReasonRepository>();
+        services.AddScoped<IApprovalRequestService, ApprovalRequestService>();
+        services.AddScoped<IApprovalRequestRepository, ApprovalRequestRepository>();
+        services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+        services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
         
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>

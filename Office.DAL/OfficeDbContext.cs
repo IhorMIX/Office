@@ -5,11 +5,8 @@ using Office.DAL.Entity.Selections;
 
 namespace Office.DAL;
 
-public class OfficeDbContext : DbContext
+public class OfficeDbContext(DbContextOptions<OfficeDbContext> options) : DbContext(options)
 {
-    public OfficeDbContext(DbContextOptions<OfficeDbContext> options) : base(options)
-    {
-    }
     public DbSet<BaseEmployee> BaseEmployees { get; set; }
 
     public DbSet<Employee> Employees { get; set; }
