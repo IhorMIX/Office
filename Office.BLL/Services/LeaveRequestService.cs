@@ -57,6 +57,13 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
                 Comment = leaveRequestModel.Comment
             },
             cancellationToken);
+        
+        var employeeDays  = requestDb.Employee.OutOfOfficeBalance;
+        var daysOff = (requestDb.EndDate - requestDb.StartDate).Days;
+        
+        if(daysOff > employeeDays)
+            throw new OutOfBalanceLimitException("Employee doesn't have enough days on balance");
+        
         return mapper.Map<LeaveRequestModel>(requestDb);
     }
 
@@ -103,7 +110,7 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
             .FirstOrDefaultAsync(e => e.Id == employeeId && (e is Employee || e is Admin), cancellationToken);
 
         if (employeeDb is null)
-            throw new EmployeeNotFoundException($"User with Id {employeeId} not found or does not have permission to delete leave requests.");
+            throw new RequestException($"User does not have permission to delete leave requests.");
         
         var query = leaveRequestRepository.GetAll()
             .Include(r => r.Employee);
@@ -125,7 +132,8 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
         if (userDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {employeeId} not found");
         
-        
+        //admin can check all requests
+        //hr, pm can check only own employee's request(employee must be pin to manager)
         var leaveRequestsDb = userDb switch
         {
             HrManager => await leaveRequestRepository.GetAll()
