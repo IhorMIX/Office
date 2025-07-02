@@ -242,7 +242,7 @@ namespace Office.DAL.Migrations
             migrationBuilder.InsertData(
                 table: "BaseEmployees",
                 columns: new[] { "Id", "AuthorizationInfoId", "Discriminator", "FullName", "Login", "Password", "isDeactivated" },
-                values: new object[] { 1, 0, "Admin", "ADMIN", "admin", "AN5AFuQC7N/pcMlzyU94dTF0oSfUx0+aHxY+mjwG5mojcJ0q4zOUqI6lXGlxSwMo5Q==", false });
+                values: new object[] { 1, 0, "Admin", "ADMIN", "admin", "ANQE9vuNoOS6J1Af8yk/a4nBg++OJRyeEc87sqXiqDwKdFgXGKGZqmbw104u/9R4EA==", false });
 
             migrationBuilder.InsertData(
                 table: "Positions",
