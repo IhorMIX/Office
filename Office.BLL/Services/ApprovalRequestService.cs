@@ -11,7 +11,7 @@ using Office.DAL.Repositories.Intefaces;
 namespace Office.BLL.Services;
 
 public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRepository,
-    IEmployeeRepository employeeRepository, IMapper mapper): IApprovalRequestService
+    IEmployeeRepository employeeRepository, IMapper mapper, ILeaveRequestRepository leaveRequestRepository): IApprovalRequestService
 {
     public async Task<ApprovalRequestModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
@@ -94,7 +94,8 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
         
         await employeeRepository.UpdateEmployeeAsync(employee, cancellationToken);
         await approvalRequestRepository.UpdateApprovalRequestAsync(requestDb, cancellationToken);
-
+        
+        await leaveRequestRepository.DeleteLeaveRequestAsync(requestDb.LeaveRequest, cancellationToken);
         return mapper.Map<ApprovalRequestModel>(requestDb);
     }
 

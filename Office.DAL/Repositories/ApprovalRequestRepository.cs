@@ -13,7 +13,8 @@ public class ApprovalRequestRepository(OfficeDbContext officeDbContext) : IAppro
 
     public async Task<ApprovalRequest?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await officeDbContext.ApprovalRequests.Include(r => r.LeaveRequest).SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
+        return await officeDbContext.ApprovalRequests.Include(r => r.LeaveRequest)
+            .ThenInclude(lr => lr.Employee).SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
 
     public async Task<ApprovalRequest> CreateApprovalRequestAsync(ApprovalRequest request, CancellationToken cancellationToken = default)
