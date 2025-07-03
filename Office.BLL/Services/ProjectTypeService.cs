@@ -52,4 +52,26 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
             throw new EntityNotFoundException($"Project Type with Id {projectTypeId} not found");
         await projectTypeRepository.DeleteProjectTypeAsync(projectTypeDb, cancellationToken);
     }
+
+    public async Task UpdateProjectTypeAsync(int managerId, ProjectType projectType, CancellationToken cancellationToken = default)
+    {
+        var managerDb = await employeeRepository.GetAllManagers()
+            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is HrManager),
+                cancellationToken);
+        if (managerDb is null)
+            throw new ManagerException($"Project manager or admin with Id {managerId} not found");
+
+        var projectTypeCheck = await projectTypeRepository.GetAll().Where(r => r.Name == projectType.Name)
+            .SingleOrDefaultAsync(cancellationToken);
+        if (projectTypeCheck != null)
+            throw new AlreadyDataException($"ProjectType with name {projectType.Name} created already");
+        
+        var projectTypeDb = await projectTypeRepository.GetByIdAsync(projectType.Id, cancellationToken);
+        if (projectTypeDb is null)
+            throw new EntityNotFoundException($"ProjectType with id {projectType.Id} not found");
+
+        projectTypeDb.Name = projectType.Name;
+
+        await projectTypeRepository.UpdateProjectTypeAsync(projectTypeDb, cancellationToken);
+    }
 }

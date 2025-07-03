@@ -54,8 +54,25 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
         await positionRepository.DeletePositionAsync(positionDb, cancellationToken);
     }
 
-    public Task UpdatePositionAsync(PositionModel position, CancellationToken cancellationToken = default)
+    public async Task UpdatePositionAsync(int managerId, Position position, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var managerDb = await employeeRepository.GetAllManagers()
+            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
+                cancellationToken);
+        if (managerDb is null)
+            throw new ManagerException($"Hr manager or admin with Id {managerId} not found");
+
+        var positionCheck = await positionRepository.GetAll().Where(r => r.Name == position.Name)
+            .SingleOrDefaultAsync(cancellationToken);
+        if (positionCheck != null)
+            throw new AlreadyDataException($"Position with name {position.Name} created already");
+        
+        var positionDb = await positionRepository.GetByIdAsync(position.Id, cancellationToken);
+        if (positionDb is null)
+            throw new EntityNotFoundException($"Position with id {position.Id} not found");
+
+        positionDb.Name = position.Name;
+
+        await positionRepository.UpdatePositionAsync(positionDb, cancellationToken);
     }
 }

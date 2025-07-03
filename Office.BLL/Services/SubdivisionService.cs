@@ -51,4 +51,26 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
             throw new EntityNotFoundException($"Subdivision with Id {subdivisionId} not found");
         await subdivisionRepository.DeleteSubdivisionAsync(subdivisionDb, cancellationToken);
     }
+    
+    public async Task UpdateSubdivisionAsync(int managerId, Subdivision subdivision, CancellationToken cancellationToken = default)
+    {
+        var managerDb = await employeeRepository.GetAllManagers()
+            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
+                cancellationToken);
+        if (managerDb is null)
+            throw new ManagerException($"Hr manager or admin with Id {managerId} not found");
+
+        var subdivisionCheck = await subdivisionRepository.GetAll().Where(r => r.Name == subdivision.Name)
+            .SingleOrDefaultAsync(cancellationToken);
+        if (subdivisionCheck != null)
+            throw new AlreadyDataException($"Subdivision with name {subdivision.Name} created already");
+        
+        var subdivisionDb = await subdivisionRepository.GetByIdAsync(subdivision.Id, cancellationToken);
+        if (subdivisionDb is null)
+            throw new EntityNotFoundException($"Subdivision with id {subdivision.Id} not found");
+
+        subdivisionDb.Name = subdivision.Name;
+
+        await subdivisionRepository.UpdateSubdivisionAsync(subdivisionDb, cancellationToken);
+    }
 }

@@ -44,4 +44,12 @@ public class ProjectController(IProjectService projectService, IMapper mapper)
         await projectService.AddEmployeesInProjectAsync(userId, addEmployeesModel.ProjectId, addEmployeesModel.EmployeesIds, cancellationToken);
         return Ok();
     }
+    
+    [HttpPut]
+    public async Task<IActionResult> UpdateProject([FromBody]ProjectUpdateModel projectCreateModel, CancellationToken cancellationToken = default)
+    {
+        var userId = User.GetUserId();
+        var project= await projectService.UpdateProjectAsync(userId,mapper.Map<ProjectModel>(projectCreateModel), cancellationToken);
+        return Ok(mapper.Map<ProjectViewModel>(project));
+    }
 }

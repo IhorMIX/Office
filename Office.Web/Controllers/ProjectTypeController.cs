@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Office.BLL.Models;
 using Office.BLL.Services.Interfaces;
+using Office.DAL.Entity.Selections;
 using Office.Web.Extensions;
 using Office.Web.Models;
 
@@ -22,7 +23,7 @@ public class ProjectTypeController(IProjectTypeService projectTypeService, IMapp
     }
 
     [HttpPost("create-projectType")]
-    public async Task<IActionResult> CreatePosition(SelectionCreateModel projectTypeCreateModel, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreateProjectType(SelectionCreateModel projectTypeCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
         var result = await projectTypeService.CreateProjectTypeAsync(mapper.Map<ProjectTypeModel>(projectTypeCreateModel), adminId, cancellationToken);
@@ -30,10 +31,19 @@ public class ProjectTypeController(IProjectTypeService projectTypeService, IMapp
     }
     
     [HttpDelete("{projectTypeId:int}")]
-    public async Task<IActionResult> DeletePosition(int projectTypeId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> DeleteProjectType(int projectTypeId, CancellationToken cancellationToken = default)
     {
         var managerId = User.GetUserId();
         await projectTypeService.DeleteProjectTypeAsync(projectTypeId,managerId,cancellationToken);
+        return Ok();
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> UpdateProjectType([FromBody] SelectionViewModel projectType,
+        CancellationToken cancellationToken = default)
+    {
+        var userId = User.GetUserId();
+        await projectTypeService.UpdateProjectTypeAsync(userId, mapper.Map<ProjectType>(projectType), cancellationToken);
         return Ok();
     }
 }
