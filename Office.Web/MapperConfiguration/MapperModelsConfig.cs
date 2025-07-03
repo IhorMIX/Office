@@ -18,10 +18,12 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<EmployeeCreateModel, EmployeeModel>().ReverseMap();
         CreateMap<EmployeeFullViewModel, EmployeeModel>().ReverseMap();
         CreateMap<BaseEmployeeViewModel, EmployeeModel>().ReverseMap();
+        CreateMap<EmployeeUpdateModel, EmployeeModel>().ReverseMap();
 
         CreateMap<BaseManager, BaseManagerModel>().ReverseMap();
         CreateMap<HrManager, HrManagerModel>().ReverseMap();
         CreateMap<ProjectManager, ProjectManagerModel>().ReverseMap();
+        CreateMap<BaseManagerModel, ManagerUpdateModel>().ReverseMap();
 
         CreateMap<BaseEmployeeModel, CurrentUserViewModel>()
             .ForMember(dest => dest.EmployeeType, opt => opt.Ignore())
@@ -105,6 +107,8 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<ProjectViewModel, ProjectModel>()
             .ReverseMap();
         CreateMap<ProjectCreateModel, ProjectModel>()
+            .ReverseMap();
+        CreateMap<ProjectUpdateModel, ProjectModel>()
             .ReverseMap();
         
         CreateMap<ApprovalRequest, ApprovalRequestModel>()
