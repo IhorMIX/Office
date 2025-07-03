@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Office.BLL.Models;
 using Office.BLL.Services.Interfaces;
+using Office.DAL.Entity.Selections;
 using Office.Web.Extensions;
 using Office.Web.Models;
 
@@ -34,6 +35,15 @@ public class AbsenceReasonController(IAbsenceReasonService absenceReasonService,
     {
         var managerId = User.GetUserId();
         await absenceReasonService.DeleteAbsenceReasonAsync(absenceReasonId,managerId, cancellationToken);
+        return Ok();
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] AbsenceReasonViewModel absenceReason,
+        CancellationToken cancellationToken = default)
+    {
+        var userId = User.GetUserId();
+        await absenceReasonService.UpdateAbsenceReasonAsync(userId, mapper.Map<AbsenceReason>(absenceReason), cancellationToken);
         return Ok();
     }
 } 

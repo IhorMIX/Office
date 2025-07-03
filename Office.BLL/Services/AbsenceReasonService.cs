@@ -56,8 +56,25 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
         await absenceReasonRepository.DeleteAbsenceReasonAsync(absenceReasonDb, cancellationToken);
     }
 
-    public Task UpdateAbsenceReasonAsync(AbsenceReasonModel absenceReasonModel, CancellationToken cancellationToken = default)
+    public async Task UpdateAbsenceReasonAsync(int managerId, AbsenceReason absenceReason, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var managerDb = await employeeRepository.GetAllManagers()
+            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is HrManager),
+                cancellationToken);
+        if (managerDb is null)
+            throw new ManagerException($"Project manager or admin with Id {managerId} not found");
+
+        var absenceReasonCheck = await absenceReasonRepository.GetAll().Where(r => r.ReasonDescription == absenceReason.ReasonDescription)
+            .SingleOrDefaultAsync(cancellationToken);
+        if (absenceReasonCheck != null)
+            throw new AlreadyDataException($"Absence reason with name {absenceReason.ReasonDescription} created already");
+        
+        var absenceReasonDb = await absenceReasonRepository.GetByIdAsync(absenceReason.Id, cancellationToken);
+        if (absenceReasonDb is null)
+            throw new EntityNotFoundException($"Absence reason with id {absenceReason.Id} not found");
+
+        absenceReasonDb.ReasonDescription = absenceReason.ReasonDescription;
+
+        await absenceReasonRepository.UpdateAbsenceReasonAsync(absenceReasonDb, cancellationToken);
     }
 }
