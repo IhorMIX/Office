@@ -46,4 +46,12 @@ public class EmployeeController(IEmployeeService employeeService, IMapper mapper
         var employees = await employeeService.GetAllAsync(managerId, cancellationToken);
         return Ok(mapper.Map<List<EmployeeViewModel>>(employees));
     }
+    
+    [HttpPut]
+    public async Task<IActionResult> UpdateEmployee([FromBody] EmployeeUpdateModel employeeUpdateModel, CancellationToken cancellationToken = default)
+    {
+        var managerId = User.GetUserId();
+        await employeeService.UpdateEmployeeAsync(managerId, mapper.Map<EmployeeModel>(employeeUpdateModel), cancellationToken);
+        return Ok();
+    }
 }

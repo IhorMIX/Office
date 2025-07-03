@@ -45,9 +45,38 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
         return mapper.Map<EmployeeModel>(await employeeRepository.GetByIdAsync(employeeDb.Id, cancellationToken));
     }
 
-    public Task<EmployeeModel> UpdateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
+    public async Task<EmployeeModel> UpdateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var updater = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
+        if (updater is null)
+            throw new EmployeeNotFoundException($"Employee with Id {managerId} not found");
+
+        var employeeDb = await employeeRepository.GetAllEmployees()
+            .SingleOrDefaultAsync(r => r.Id == employeeModel.Id, cancellationToken);
+
+        if (employeeDb is null)
+            throw new EmployeeNotFoundException($"Employee with Id {employeeModel.Id} not found");
+
+        foreach (var propertyMap in ReflectionHelper.WidgetUtil<EmployeeModel, Employee>.PropertyMap)
+        {
+            var userProperty = propertyMap.Item1;
+            var userDbProperty = propertyMap.Item2;
+
+            var userSourceValue = userProperty.GetValue(employeeModel);
+            var userTargetValue = userDbProperty.GetValue(employeeDb);
+
+            if (userSourceValue != null && !ReferenceEquals(userSourceValue, "") &&
+                !userSourceValue.Equals(userTargetValue))
+            {
+                userDbProperty.SetValue(employeeDb, userSourceValue);
+            }
+        }
+
+        employeeDb!.Password = string.IsNullOrEmpty(employeeModel.Password)
+            ? employeeDb.Password
+            : PasswordHelper.HashPassword(employeeModel.Password);
+        var updatedManager = await employeeRepository.UpdateEmployeeAsync(employeeDb, cancellationToken);
+        return mapper.Map<EmployeeModel>(updatedManager);
     }
     //removes just employees and manager
     public async Task DeleteEmployeeAsync(int id, int managerId, CancellationToken cancellationToken = default)
