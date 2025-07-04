@@ -39,6 +39,7 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
     {
         return officeDbContext.ProjectManagers
             .Include(r => r.Projects)
+            .ThenInclude(r=>r.ProjectType)
             .AsQueryable();
     }
     public async Task<BaseEmployee?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
