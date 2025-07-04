@@ -87,6 +87,7 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<SelectionCreateModel, ProjectTypeModel>();
         CreateMap<ProjectType, ProjectTypeModel>().ReverseMap();
         CreateMap<ProjectTypeModel, SelectionViewModel>().ReverseMap();
+        CreateMap<ProjectType, SelectionViewModel>().ReverseMap();
         CreateMap<SelectionViewModel, ProjectType>()
             .ForMember(m => m.Projects, o => o.Ignore())
             .ReverseMap();
