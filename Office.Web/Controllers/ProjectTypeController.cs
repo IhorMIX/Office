@@ -26,7 +26,7 @@ public class ProjectTypeController(IProjectTypeService projectTypeService, IMapp
     public async Task<IActionResult> CreateProjectType(SelectionCreateModel projectTypeCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
-        var result = await projectTypeService.CreateProjectTypeAsync(mapper.Map<ProjectTypeModel>(projectTypeCreateModel), adminId, cancellationToken);
+        var result = await projectTypeService.CreateProjectTypeAsync(adminId, projectTypeCreateModel.Name, cancellationToken);
         return Ok(mapper.Map<SelectionViewModel>(result));
     }
     
