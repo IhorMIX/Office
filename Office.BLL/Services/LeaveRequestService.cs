@@ -70,12 +70,9 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
     public async Task<LeaveRequestModel> UpdateLeaveRequestAsync(int employeeId, LeaveRequestModel leaveRequestModel,
         CancellationToken cancellationToken = default)
     {
-        var employeeDb = await employeeRepository.GetAll()
-            .FirstOrDefaultAsync(r => r.Id == employeeId && r is Employee, cancellationToken);
-        if (employeeDb is not Employee)
-        {
-            throw new EmployeeNotFoundException($"Employee with Id {employeeId} not found");
-        }
+        var employee = await employeeRepository.GetByIdAsync(employeeId, cancellationToken);
+        if (employee is not (Employee or Admin))
+            throw new NotPermissionException("You don't have permissions");
 
         var leaveRequestDb = await leaveRequestRepository.GetAll()
             .SingleOrDefaultAsync(r => r.Id == leaveRequestModel.Id && r.EmployeeId == employeeId, cancellationToken);
@@ -106,16 +103,14 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
 
     public async Task DeleteLeaveRequestAsync(int employeeId, int leaveRequestId, CancellationToken cancellationToken = default)
     {
-        var employeeDb = await employeeRepository.GetAll()
-            .FirstOrDefaultAsync(e => e.Id == employeeId && (e is Employee || e is Admin), cancellationToken);
-
-        if (employeeDb is null)
-            throw new RequestException($"User does not have permission to delete leave requests.");
+        var employee = await employeeRepository.GetByIdAsync(employeeId, cancellationToken);
+        if (employee is not Admin)
+            throw new NotPermissionException("You don't have permissions");
         
         var query = leaveRequestRepository.GetAll()
             .Include(r => r.Employee);
         
-        LeaveRequest? leaveRequestDb = employeeDb is Employee
+        LeaveRequest? leaveRequestDb = employee is Employee
             ? await query.SingleOrDefaultAsync(r => r.EmployeeId == employeeId && r.Id == leaveRequestId, cancellationToken)
             : await query.SingleOrDefaultAsync(r => r.Id == leaveRequestId, cancellationToken);
 

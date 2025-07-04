@@ -24,9 +24,9 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
     
     public async Task<SubdivisionModel> CreateSubdivisionAsync(SubdivisionModel subdivisionModel,int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
-        if (creator is null)
-            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
+        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
+        if (creator is not (HrManager or Admin))
+            throw new NotPermissionException("You don't have permissions");
         
         var subdivisionDb = await subdivisionRepository.GetAll().FirstOrDefaultAsync(i => i.Name == subdivisionModel.Name, cancellationToken);
         if (subdivisionDb is not null)
@@ -41,10 +41,10 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
     
     public async Task DeleteSubdivisionAsync(int subdivisionId, int managerId,CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
-        if (creator is null)
-            
-            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
+        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
+        if (creator is not (HrManager or Admin))
+            throw new NotPermissionException("You don't have permissions");
+        
         var subdivisionDb = await subdivisionRepository.GetByIdAsync(subdivisionId, cancellationToken);
         
         if (subdivisionDb is null)
@@ -58,7 +58,7 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
             .SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
                 cancellationToken);
         if (managerDb is null)
-            throw new ManagerException($"Hr manager or admin with Id {managerId} not found");
+            throw new NotPermissionException("You don't have permissions");
 
         var subdivisionCheck = await subdivisionRepository.GetAll().Where(r => r.Name == subdivision.Name)
             .SingleOrDefaultAsync(cancellationToken);

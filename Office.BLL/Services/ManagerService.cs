@@ -17,15 +17,15 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
         var managerDb = await employeeRepository.GetManagerByIdAsync(id, cancellationToken);
         
         if (managerDb is null)
-            throw new EmployeeNotFoundException($"Employee with Id {id} not found");
+            throw new ManagerException($"Manager with Id {id} not found");
         return managerDb;
     }
 
     public async Task<BaseManagerModel> CreateManagerAsync(int adminId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
     {
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId && !(r is ProjectManager), cancellationToken);
+        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
         if (user is null)
-            throw new ManagerException("Invalid manager type");
+            throw new NotPermissionException("You don't have permissions");
         
         var managerDb = await employeeRepository.GetAll().FirstOrDefaultAsync(i => i.Login == managerModel.Login, cancellationToken);
         if (managerDb is not null)
@@ -54,9 +54,9 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<BaseManagerModel> UpdateManagerAsync(int managerId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
     {
-        var updater = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager), cancellationToken);
+        var updater = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == managerId && r is Admin, cancellationToken);
         if (updater is null)
-            throw new ManagerException("Invalid manager type");
+            throw new NotPermissionException("You don't have permissions");
 
         if (updater is Admin || (updater is BaseManager && updater.Id == managerModel.Id))
         {
@@ -83,13 +83,13 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
             var updatedManager = await employeeRepository.UpdateEmployeeAsync(managerDb, cancellationToken);
             return mapper.Map<BaseManagerModel>(updatedManager);
         }
-        throw new ManagerException("Invalid manager type");
+        throw new NotPermissionException("You don't have permissions");
     }
     //removes just employees and manager
     public async Task DeleteManagerAsync(int managerId, int adminId, CancellationToken cancellationToken = default)
     {
         if (managerId == adminId)
-            throw new Exception("You can't delete yourself");
+            throw new NotPermissionException("You can't delete yourself");
         
         var adminUser = await employeeRepository.GetAllManagers()
             .SingleOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
@@ -110,7 +110,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
     {
         var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
-            throw new ManagerException("Invalid manager type");
+            throw new NotPermissionException("You don't have permissions");
         
         var managersDb = await employeeRepository.GetAllManagers().ToListAsync(cancellationToken);
         return mapper.Map<List<BaseManagerModel>>(managersDb);
@@ -120,7 +120,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
     {
         var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
-            throw new ManagerException("Invalid manager type");
+            throw new NotPermissionException("You don't have permissions");
         
         var managersDb = await employeeRepository.GetAllHrManagers().ToListAsync(cancellationToken);
         return mapper.Map<List<HrManagerModel>>(managersDb);
@@ -130,7 +130,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
     {
         var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
-            throw new ManagerException("Invalid manager type");
+            throw new NotPermissionException("You don't have permissions");
         
         var managersDb = await employeeRepository.GetAllProjectManagers().ToListAsync(cancellationToken);
         return mapper.Map<List<ProjectManagerModel>>(managersDb);

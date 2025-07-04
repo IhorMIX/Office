@@ -22,29 +22,31 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
         return subdivision;
     }
 
-    public async Task<ProjectTypeModel> CreateProjectTypeAsync(ProjectTypeModel projectTypeModel, int managerId,
-        CancellationToken cancellationToken = default)
+    public async Task<ProjectType> CreateProjectTypeAsync(int managerId, string projectName, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
-        if (creator is null)
-            throw new EmployeeNotFoundException($"Admin or Project Manager with Id {managerId} not found");
+        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
+        if (creator is not (ProjectManager or Admin))
+            throw new NotPermissionException("You don't have permissions");
         
-        var projectTypeDb = await projectTypeRepository.GetAll().FirstOrDefaultAsync(i => i.Name == projectTypeModel.Name, cancellationToken);
+        var projectTypeDb = await projectTypeRepository.GetAll().FirstOrDefaultAsync(i => i.Name == projectName, cancellationToken);
         if (projectTypeDb is not null)
         {
-            if (projectTypeDb.Name == projectTypeModel.Name)
+            if (projectTypeDb.Name == projectName)
                 throw new AlreadyDataException("Project Type is already created");
         }
         
-        var projectType = await projectTypeRepository.CreateProjectTypeAsync(mapper.Map<ProjectType>(projectTypeModel), cancellationToken);
-        return mapper.Map<ProjectTypeModel>(await projectTypeRepository.GetByIdAsync(projectType.Id, cancellationToken));
+        var projectType = await projectTypeRepository.CreateProjectTypeAsync(new ProjectType
+        {
+            Name = projectName,
+        }, cancellationToken);
+        return projectType;
     }
 
     public async Task DeleteProjectTypeAsync(int projectTypeId, int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
-        if (creator is null)
-            throw new EmployeeNotFoundException($"Admin or Project Manager with Id {managerId} not found");
+        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
+        if (creator is not (ProjectManager or Admin))
+            throw new NotPermissionException("You don't have permissions");
         
         var projectTypeDb = await projectTypeRepository.GetByIdAsync(projectTypeId, cancellationToken);
         
@@ -59,7 +61,7 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
             .SingleOrDefaultAsync(r => r.Id == managerId && !(r is HrManager),
                 cancellationToken);
         if (managerDb is null)
-            throw new ManagerException($"Project manager or admin with Id {managerId} not found");
+            throw new NotPermissionException("You don't have permissions");
 
         var projectTypeCheck = await projectTypeRepository.GetAll().Where(r => r.Name == projectType.Name)
             .SingleOrDefaultAsync(cancellationToken);

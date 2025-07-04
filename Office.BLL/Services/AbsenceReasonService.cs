@@ -24,9 +24,9 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
 
     public async Task<AbsenceReason> CreateAbsenceReasonAsync(string description, int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
-        if (creator is null)
-            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
+        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
+        if (creator is not (HrManager or Admin))
+            throw new ManagerException($"Admin or Hr Manager with Id {managerId} not found");
         
         var absenceReasonDb = await absenceReasonRepository.GetAll().FirstOrDefaultAsync(i => i.ReasonDescription == description, cancellationToken);
         if (absenceReasonDb is not null)
@@ -45,9 +45,9 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
 
     public async Task DeleteAbsenceReasonAsync(int absenceReasonId, int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
-        if (creator is null)
-            throw new EmployeeNotFoundException($"Admin or Hr Manager with Id {managerId} not found");
+        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
+        if (creator is not (HrManager or Admin))
+            throw new ManagerException($"Admin or Hr Manager with Id {managerId} not found");
         
         var absenceReasonDb = await absenceReasonRepository.GetByIdAsync(absenceReasonId, cancellationToken);
         
@@ -59,10 +59,10 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
     public async Task UpdateAbsenceReasonAsync(int managerId, AbsenceReason absenceReason, CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAllManagers()
-            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is HrManager),
+            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
                 cancellationToken);
         if (managerDb is null)
-            throw new ManagerException($"Project manager or admin with Id {managerId} not found");
+            throw new ManagerException($"Hr manager or admin with Id {managerId} not found");
 
         var absenceReasonCheck = await absenceReasonRepository.GetAll().Where(r => r.ReasonDescription == absenceReason.ReasonDescription)
             .SingleOrDefaultAsync(cancellationToken);
