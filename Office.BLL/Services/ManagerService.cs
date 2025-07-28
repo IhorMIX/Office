@@ -104,15 +104,17 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
         
         await employeeRepository.DeleteEmployeeAsync(managerDb, cancellationToken);
     }
-
-
+    
+    //adminId - admin or HR
     public async Task<List<BaseManagerModel>> GetAll(int adminId, CancellationToken cancellationToken = default)
     {
         var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
-        var managersDb = await employeeRepository.GetAllManagers().ToListAsync(cancellationToken);
+        var managersDb = await employeeRepository.GetAllManagers()
+            .Where(m => !(m is Admin))
+            .ToListAsync(cancellationToken);
         return mapper.Map<List<BaseManagerModel>>(managersDb);
     }
 
@@ -122,7 +124,8 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
-        var managersDb = await employeeRepository.GetAllHrManagers().ToListAsync(cancellationToken);
+        var managersDb = await employeeRepository.GetAllHrManagers()
+            .ToListAsync(cancellationToken);
         return mapper.Map<List<HrManagerModel>>(managersDb);
     }
 
