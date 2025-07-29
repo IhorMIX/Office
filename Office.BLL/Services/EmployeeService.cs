@@ -94,8 +94,8 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
     }
     public async Task<List<EmployeeModel>> GetAllAsync(int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is Employee)
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && !(r is Employee)).SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
 
         var employees = await employeeRepository.GetAllEmployees()
