@@ -26,7 +26,8 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
 
     public async Task<List<ApprovalRequestModel>> GetApprovalRequestsAsync(int userId, CancellationToken cancellationToken = default)
     {
-        var userDb = await employeeRepository.GetByIdAsync(userId, cancellationToken);
+        var userDb = await employeeRepository.GetAll()
+            .SingleOrDefaultAsync(r => r.Id == userId, cancellationToken);
         if (userDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {userId} not found");
         
@@ -63,8 +64,9 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
     public async Task<ApprovalRequestModel> ApproveLeaveRequestAsync(int managerId, int requestId, string comment,
         CancellationToken cancellationToken = default)
     {
-        var managerDb = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (managerDb is not Admin)
+        var managerDb = await employeeRepository.GetAll()
+            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is Employee), cancellationToken);
+        if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
         
         var requestDb = await approvalRequestRepository.GetByIdAsync(requestId, cancellationToken);
@@ -97,8 +99,9 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
     public async Task<ApprovalRequestModel> DeclineLeaveRequestAsync(int managerId, int requestId, string comment,
         CancellationToken cancellationToken = default)
     {
-        var managerDb = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (managerDb is not Admin)
+        var managerDb = await employeeRepository.GetAll()
+            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is Employee), cancellationToken);
+        if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
         
         var requestDb = await approvalRequestRepository.GetByIdAsync(requestId, cancellationToken);

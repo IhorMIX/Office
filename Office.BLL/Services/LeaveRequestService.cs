@@ -70,8 +70,9 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
     public async Task<LeaveRequestModel> UpdateLeaveRequestAsync(int employeeId, LeaveRequestModel leaveRequestModel,
         CancellationToken cancellationToken = default)
     {
-        var employee = await employeeRepository.GetByIdAsync(employeeId, cancellationToken);
-        if (employee is not (Employee or Admin))
+        var employeeDb = await employeeRepository.GetAll()
+            .FirstOrDefaultAsync(r => r.Id == employeeId && r is Employee, cancellationToken);
+        if (employeeDb is not Employee)
             throw new NotPermissionException("You don't have permissions");
 
         var leaveRequestDb = await leaveRequestRepository.GetAll()
@@ -103,14 +104,15 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
 
     public async Task DeleteLeaveRequestAsync(int employeeId, int leaveRequestId, CancellationToken cancellationToken = default)
     {
-        var employee = await employeeRepository.GetByIdAsync(employeeId, cancellationToken);
-        if (employee is not Admin)
+        var employeeDb = await employeeRepository.GetAll()
+            .FirstOrDefaultAsync(e => e.Id == employeeId && (e is Employee || e is Admin), cancellationToken);
+        if (employeeDb is null)
             throw new NotPermissionException("You don't have permissions");
         
         var query = leaveRequestRepository.GetAll()
             .Include(r => r.Employee);
         
-        LeaveRequest? leaveRequestDb = employee is Employee
+        LeaveRequest? leaveRequestDb = employeeDb is Employee
             ? await query.SingleOrDefaultAsync(r => r.EmployeeId == employeeId && r.Id == leaveRequestId, cancellationToken)
             : await query.SingleOrDefaultAsync(r => r.Id == leaveRequestId, cancellationToken);
 
