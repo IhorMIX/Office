@@ -39,7 +39,8 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
 
     public async Task DeleteProjectAsync(int projectId, int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin)).SingleOrDefaultAsync(cancellationToken);
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -98,7 +99,6 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
     public async Task AddEmployeesInProjectAsync(int projectManagerId, int projectId, ICollection<int> employeeModelsIds,
         CancellationToken cancellationToken = default)
     {
-        
         var manager = await employeeRepository.GetAll()
             .SingleOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
                 cancellationToken);

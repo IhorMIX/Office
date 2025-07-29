@@ -24,8 +24,9 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
 
     public async Task<ProjectType> CreateProjectTypeAsync(int managerId, string projectName, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (ProjectManager or Admin))
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var projectTypeDb = await projectTypeRepository.GetAll().FirstOrDefaultAsync(i => i.Name == projectName, cancellationToken);
@@ -44,8 +45,9 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
 
     public async Task DeleteProjectTypeAsync(int projectTypeId, int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (ProjectManager or Admin))
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var projectTypeDb = await projectTypeRepository.GetByIdAsync(projectTypeId, cancellationToken);
