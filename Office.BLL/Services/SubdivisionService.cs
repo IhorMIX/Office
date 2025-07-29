@@ -24,8 +24,9 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
     
     public async Task<SubdivisionModel> CreateSubdivisionAsync(SubdivisionModel subdivisionModel,int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (HrManager or Admin))
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var subdivisionDb = await subdivisionRepository.GetAll().FirstOrDefaultAsync(i => i.Name == subdivisionModel.Name, cancellationToken);
@@ -41,8 +42,9 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
     
     public async Task DeleteSubdivisionAsync(int subdivisionId, int managerId,CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (HrManager or Admin))
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var subdivisionDb = await subdivisionRepository.GetByIdAsync(subdivisionId, cancellationToken);
