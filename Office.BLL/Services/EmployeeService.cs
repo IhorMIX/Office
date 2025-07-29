@@ -27,8 +27,9 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
 
     public async Task<EmployeeModel> CreateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (HrManager or Admin))
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var employeeDb = await employeeRepository.GetAll().FirstOrDefaultAsync(i => i.Login == employeeModel.Login, cancellationToken);
@@ -47,8 +48,9 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
 
     public async Task<EmployeeModel> UpdateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
     {
-        var updater = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (updater is not (HrManager or Admin))
+        var updater = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (updater is null)
             throw new NotPermissionException("You don't have permissions");
 
         var employeeDb = await employeeRepository.GetAllEmployees()
@@ -81,8 +83,9 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
 
     public async Task DeleteEmployeeAsync(int id, int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (HrManager or Admin))
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var employeeDb = await employeeRepository.GetByIdAsync(id, cancellationToken);
