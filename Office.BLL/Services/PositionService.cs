@@ -26,8 +26,9 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
 
     public async Task<PositionModel> CreatePositionAsync(PositionModel positionModel,int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (HrManager or Admin))
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var positionDb = await positionRepository.GetAll().FirstOrDefaultAsync(i => i.Name == positionModel.Name, cancellationToken);
@@ -43,8 +44,9 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
 
     public async Task DeletePositionAsync(int positionId,int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (HrManager or Admin))
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var positionDb = await positionRepository.GetByIdAsync(positionId, cancellationToken);
