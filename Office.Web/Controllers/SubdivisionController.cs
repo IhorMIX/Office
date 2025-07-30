@@ -45,4 +45,11 @@ public class SubdivisionController(ISubdivisionService subdivisionService, IMapp
         await subdivisionService.UpdateSubdivisionAsync(userId, mapper.Map<Subdivision>(subdivision), cancellationToken);
         return Ok();
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetSubdivisions(CancellationToken cancellationToken = default)
+    {
+        var subdivisions = await subdivisionService.GetAllAsync(cancellationToken);
+        return Ok(mapper.Map<List<SelectionViewModel>>(subdivisions));
+    }
 } 

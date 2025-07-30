@@ -52,4 +52,12 @@ public class ProjectController(IProjectService projectService, IMapper mapper)
         var project= await projectService.UpdateProjectAsync(userId,mapper.Map<ProjectModel>(projectCreateModel), cancellationToken);
         return Ok(mapper.Map<ProjectViewModel>(project));
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        var projects = await projectService.GetAllAsync(userId, cancellationToken);
+        return Ok(mapper.Map<List<ProjectViewModel>>(projects));
+    }
 }

@@ -46,4 +46,12 @@ public class PositionController(IPositionService positionService, IMapper mapper
         await positionService.UpdatePositionAsync(userId, mapper.Map<Position>(position), cancellationToken);
         return Ok();
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetPositions(CancellationToken cancellationToken = default)
+    {
+        var positions = await positionService.GetAllAsync(cancellationToken);
+        return Ok(mapper.Map<List<SelectionViewModel>>(positions));
+    }
+
 } 
