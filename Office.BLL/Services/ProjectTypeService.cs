@@ -22,6 +22,12 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
         return subdivision;
     }
 
+    public async Task<List<ProjectType>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var projectType = await projectTypeRepository.GetAll().ToListAsync(cancellationToken);
+        return projectType;
+    }
+    
     public async Task<ProjectType> CreateProjectTypeAsync(int managerId, string projectName, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))

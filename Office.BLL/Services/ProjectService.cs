@@ -5,6 +5,7 @@ using Office.BLL.Helpers;
 using Office.BLL.Models;
 using Office.BLL.Services.Interfaces;
 using Office.DAL.Entity;
+using Office.DAL.Entity.Employees;
 using Office.DAL.Entity.Selections;
 using Office.DAL.Repositories.Intefaces;
 
@@ -122,5 +123,43 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
         {
             throw new EmployeeNotFoundException($"Employees not found");
         }
+    }
+    
+    public async Task<List<ProjectModel>> GetAllAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        var userDb = await employeeRepository.GetAll()
+            .SingleOrDefaultAsync(r => r.Id == userId, cancellationToken);
+        if (userDb is null)
+            throw new EntityNotFoundException($"Project manager or admin with Id {userId} not found");
+
+        var projectsDb = userDb switch
+        {
+            HrManager => await projectRepository.GetAll()
+                .Include(r => r.ProjectType)
+                .Include(r => r.ProjectManager)
+                .Where(r => r.Employees.Any(i => i.HrManagerId == userId))
+                .ToListAsync(cancellationToken),
+
+            ProjectManager => await projectRepository.GetAll()
+                .Include(r => r.ProjectType)
+                .Include(r => r.ProjectManager)
+                .Where(r => r.ProjectManagerId == userId)
+                .ToListAsync(cancellationToken),
+
+            Employee => await projectRepository.GetAll()
+                .Include(r => r.ProjectType)
+                .Include(r => r.ProjectManager)
+                .Where(r => r.Employees.Any(i => i.Id == userId))
+                .ToListAsync(cancellationToken),
+
+            Admin => await projectRepository.GetAll()
+                .Include(r => r.ProjectType)
+                .Include(r => r.ProjectManager)
+                .ToListAsync(cancellationToken),
+
+            _ => throw new EmployeeNotFoundException($"Employee with Id {userId} not found")
+        };
+
+        return mapper.Map<List<ProjectModel>>(projectsDb.OrderBy(r=>r.Status));
     }
 }

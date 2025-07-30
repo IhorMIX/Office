@@ -15,7 +15,7 @@ public class ProjectTypeRepository(OfficeDbContext officeDbContext) : IProjectTy
     {
         return await officeDbContext.ProjectTypes.SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
-
+    
     public async Task<ProjectType> CreateProjectTypeAsync(ProjectType projectType, CancellationToken cancellationToken = default)
     {
         var entity = await officeDbContext.ProjectTypes.AddAsync(projectType,cancellationToken);

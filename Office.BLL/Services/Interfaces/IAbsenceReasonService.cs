@@ -9,4 +9,5 @@ public interface IAbsenceReasonService: IBasicService<AbsenceReasonModel>
     Task DeleteAbsenceReasonAsync(int positionId,int managerId, CancellationToken cancellationToken = default);
     Task UpdateAbsenceReasonAsync(int managerId, AbsenceReason absenceReason,
         CancellationToken cancellationToken = default);
+    Task<List<AbsenceReason>> GetAllAsync(CancellationToken cancellationToken);
 }

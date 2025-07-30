@@ -13,4 +13,5 @@ public interface IProjectService: IBasicService<ProjectModel>
 
     Task AddEmployeesInProjectAsync(int projectManagerId, int projectId,
         ICollection<int> employeeModelsIds, CancellationToken cancellationToken = default);
+    Task<List<ProjectModel>> GetAllAsync(int userId, CancellationToken cancellationToken = default);
 }

@@ -10,4 +10,5 @@ public interface IProjectTypeService: IBasicService<ProjectTypeModel>
     Task DeleteProjectTypeAsync(int projectTypeId,int managerId, CancellationToken cancellationToken = default);
     Task UpdateProjectTypeAsync(int managerId, ProjectType projectType,
         CancellationToken cancellationToken = default);
+    Task<List<ProjectType>> GetAllAsync(CancellationToken cancellationToken);
 }

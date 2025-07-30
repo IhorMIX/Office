@@ -23,7 +23,12 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
         var position = mapper.Map<PositionModel>(positionDb);
         return position;
     }
-
+    
+    public async Task<List<Position>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var subdivision = await positionRepository.GetAll().ToListAsync(cancellationToken);
+        return subdivision;
+    }
     public async Task<PositionModel> CreatePositionAsync(PositionModel positionModel,int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))

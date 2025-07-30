@@ -21,7 +21,11 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
         var absenceReason = mapper.Map<AbsenceReasonModel>(absenceReasonDb);
         return absenceReason;
     }
-
+    public async Task<List<AbsenceReason>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var absenceReason = await absenceReasonRepository.GetAll().ToListAsync(cancellationToken);
+        return absenceReason;
+    }
     public async Task<AbsenceReason> CreateAbsenceReasonAsync(string description, int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))

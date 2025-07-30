@@ -10,4 +10,5 @@ public interface ISubdivisionService: IBasicService<SubdivisionModel>
     Task DeleteSubdivisionAsync(int subdivisionId,int managerId, CancellationToken cancellationToken = default);
     Task UpdateSubdivisionAsync(int managerId, Subdivision subdivision,
         CancellationToken cancellationToken = default);
+    Task<List<Subdivision>> GetAllAsync(CancellationToken cancellationToken);
 }

@@ -21,7 +21,11 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
         var subdivision = mapper.Map<SubdivisionModel>(subdivisionDb);
         return subdivision;
     }
-    
+    public async Task<List<Subdivision>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var subdivision = await subdivisionRepository.GetAll().ToListAsync(cancellationToken);
+        return subdivision;
+    }
     public async Task<SubdivisionModel> CreateSubdivisionAsync(SubdivisionModel subdivisionModel,int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
