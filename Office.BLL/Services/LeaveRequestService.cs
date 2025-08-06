@@ -53,10 +53,12 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
                 },
                 StartDate = leaveRequestModel.StartDate,
                 EndDate = leaveRequestModel.EndDate,
-                Status = LeaveRequestStatus.Cancel,
+                Status = LeaveRequestStatus.New,
                 Comment = leaveRequestModel.Comment
             },
             cancellationToken);
+        
+        Console.WriteLine($"Saved Status: {requestDb.Status}");
         
         var employeeDays  = requestDb.Employee.OutOfOfficeBalance;
         var daysOff = (requestDb.EndDate - requestDb.StartDate).Days;
