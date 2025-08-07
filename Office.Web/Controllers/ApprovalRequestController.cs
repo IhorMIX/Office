@@ -31,11 +31,11 @@ public class ApprovalRequestController(IMapper mapper, IApprovalRequestService a
         return Ok(mapper.Map<ApprovalRequestViewModel>(approvedRequest));
     }
     
-    [HttpPut("decline")]
-    public async Task<IActionResult> DeclineRequest([FromBody] ApprovalRequestUpdateModel approve, CancellationToken cancellationToken = default)
+    [HttpPut("reject")]
+    public async Task<IActionResult> RejectRequest([FromBody] ApprovalRequestUpdateModel approve, CancellationToken cancellationToken = default)
     {
         var userId = User.GetUserId();
-        var approvedRequest = await approvalRequestService.DeclineLeaveRequestAsync(userId, approve.Id, approve.Comment,
+        var approvedRequest = await approvalRequestService.RejectLeaveRequestAsync(userId, approve.Id, approve.Comment,
             cancellationToken);
         return Ok(mapper.Map<ApprovalRequestViewModel>(approvedRequest));
     }

@@ -96,7 +96,7 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
         return mapper.Map<ApprovalRequestModel>(requestDb);
     }
 
-    public async Task<ApprovalRequestModel> DeclineLeaveRequestAsync(int managerId, int requestId, string comment,
+    public async Task<ApprovalRequestModel> RejectLeaveRequestAsync(int managerId, int requestId, string comment,
         CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAll()
