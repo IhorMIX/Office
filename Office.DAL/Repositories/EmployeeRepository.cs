@@ -14,7 +14,11 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
             .Include(r => ((Employee)r).Subdivision)
             .AsQueryable();
     }
-
+    public IQueryable<BaseManager> GetAdmin()
+    {
+        return officeDbContext.Admins.AsQueryable();
+    }
+    
     public IQueryable<BaseManager> GetAllManagers()
     {
         return officeDbContext.Managers.Include(i => i.ApprovalRequests)

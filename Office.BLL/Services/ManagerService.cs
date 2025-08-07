@@ -138,4 +138,10 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
         var managersDb = await employeeRepository.GetAllProjectManagers().ToListAsync(cancellationToken);
         return mapper.Map<List<ProjectManagerModel>>(managersDb);
     }
+    
+    public async Task<BaseManager> GetAdminAsync(CancellationToken cancellation = default)
+    {
+        var admin = await employeeRepository.GetAdmin().SingleOrDefaultAsync(cancellation);;
+        return mapper.Map<BaseManager>(admin);
+    }
 }
