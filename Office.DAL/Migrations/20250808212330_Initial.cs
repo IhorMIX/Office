@@ -195,7 +195,7 @@ namespace Office.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ApproverId = table.Column<int>(type: "int", nullable: false),
                     LeaveRequestId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    ApprovalRequestStatus = table.Column<int>(type: "int", nullable: false),
                     Comment = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
