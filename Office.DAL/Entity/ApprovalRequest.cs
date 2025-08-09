@@ -11,7 +11,7 @@ public class ApprovalRequest : BaseEntity
     public int LeaveRequestId { get; set; }
     public LeaveRequest LeaveRequest { get; set; } = null!;
 
-    public ApprovalRequestStatus Status { get; set; }
+    public ApprovalRequestStatus ApprovalRequestStatus { get; set; }
     
     public string Comment { get; set; } = null!;
-}
+}   
