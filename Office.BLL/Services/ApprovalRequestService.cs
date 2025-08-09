@@ -11,7 +11,7 @@ using Office.DAL.Repositories.Intefaces;
 namespace Office.BLL.Services;
 
 public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRepository,
-    IEmployeeRepository employeeRepository, IMapper mapper, ILeaveRequestRepository leaveRequestRepository): IApprovalRequestService
+    IEmployeeRepository employeeRepository, IMapper mapper): IApprovalRequestService
 {
     public async Task<ApprovalRequestModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
@@ -87,7 +87,7 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
 
         employee.OutOfOfficeBalance -= daysOff;
         
-        requestDb.Status = ApprovalRequestStatus.Approved;
+        requestDb.ApprovalRequestStatus = ApprovalRequestStatus.Approved;
         requestDb.Comment = comment;
         
         await employeeRepository.UpdateEmployeeAsync(employee, cancellationToken);
@@ -114,7 +114,7 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
         if(requestDb.ApproverId != managerId)
             throw new ManagerException($"manger with Id {requestId} is not approver");
         
-        requestDb.Status = ApprovalRequestStatus.Rejected;
+        requestDb.ApprovalRequestStatus = ApprovalRequestStatus.Rejected;
         requestDb.Comment = comment;
         await approvalRequestRepository.UpdateApprovalRequestAsync(requestDb, cancellationToken);
         return mapper.Map<ApprovalRequestModel>(requestDb);

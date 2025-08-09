@@ -26,8 +26,8 @@ public class ApprovalRequestController(IMapper mapper, IApprovalRequestService a
     public async Task<IActionResult> ApproveRequest([FromBody] ApprovalRequestUpdateModel approve, CancellationToken cancellationToken = default)
     {
         var userId = User.GetUserId();
-        var approvedRequest = await approvalRequestService.ApproveLeaveRequestAsync(userId, approve.Id, approve.Comment,
-            cancellationToken);
+        var approvedRequest = await approvalRequestService.ApproveLeaveRequestAsync(userId, approve.Id, approve.Comment, cancellationToken);
+        Console.WriteLine(approvedRequest.ApprovalRequestStatus);
         return Ok(mapper.Map<ApprovalRequestViewModel>(approvedRequest));
     }
     
