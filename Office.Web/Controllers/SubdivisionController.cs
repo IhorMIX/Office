@@ -26,7 +26,7 @@ public class SubdivisionController(ISubdivisionService subdivisionService, IMapp
     public async Task<IActionResult> CreatePosition(SelectionCreateModel subdivisionCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
-        var result = await subdivisionService.CreateSubdivisionAsync(mapper.Map<SubdivisionModel>(subdivisionCreateModel), adminId, cancellationToken);
+        var result = await subdivisionService.CreateSubdivisionAsync(mapper.Map<Subdivision>(subdivisionCreateModel), adminId, cancellationToken);
         return Ok(mapper.Map<SelectionViewModel>(result));
     }
     

@@ -26,7 +26,7 @@ public class PositionController(IPositionService positionService, IMapper mapper
     public async Task<IActionResult> CreatePosition(SelectionCreateModel positionCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
-        var result = await positionService.CreatePositionAsync(mapper.Map<PositionModel>(positionCreateModel), adminId, cancellationToken);
+        var result = await positionService.CreatePositionAsync(mapper.Map<Position>(positionCreateModel), adminId, cancellationToken);
         return Ok(mapper.Map<SelectionViewModel>(result));
     }
     
