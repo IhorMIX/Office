@@ -6,7 +6,7 @@ public class ProjectModel : BaseModel
     public ProjectManagerModel? ProjectManager { get; set; } = null!;
     
     public int ProjectTypeId { get; set; }
-    public ProjectTypeModel ProjectType { get; set; } = null!;
+    public SelectionModel ProjectType { get; set; } = null!;
     
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }

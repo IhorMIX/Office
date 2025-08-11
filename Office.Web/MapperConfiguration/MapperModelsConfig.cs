@@ -1,3 +1,4 @@
+using AutoMapper;
 using Office.BLL.Models;
 using Office.DAL.Entity;
 using Office.DAL.Entity.Employees;
@@ -6,7 +7,7 @@ using Office.Web.Models;
 
 namespace Office.Web.MapperConfiguration;
 
-public class MapperModelsConfig : AutoMapper.Profile
+public class MapperModelsConfig : Profile
 {
     public MapperModelsConfig()
     {
@@ -19,10 +20,12 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<EmployeeFullViewModel, EmployeeModel>().ReverseMap();
         CreateMap<BaseEmployeeViewModel, EmployeeModel>().ReverseMap();
         CreateMap<EmployeeUpdateModel, EmployeeModel>().ReverseMap();
-
+        
         CreateMap<BaseManager, BaseManagerModel>().ReverseMap();
         CreateMap<HrManager, HrManagerModel>().ReverseMap();
-        CreateMap<ProjectManager, ProjectManagerModel>().ReverseMap();
+        CreateMap<ProjectManager, ProjectManagerModel>()
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName));
+
         CreateMap<BaseManagerModel, ManagerUpdateModel>().ReverseMap();
 
         CreateMap<BaseEmployeeModel, CurrentUserViewModel>()
@@ -40,16 +43,14 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<HrManager, ManagerDetailViewModel>()
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.GetType().Name))
             .ReverseMap();
-        
-        CreateMap<HrManagerViewModel, HrManagerModel>()
-            .ReverseMap();
-        
+
+        CreateMap<HrManagerViewModel, HrManagerModel>().ReverseMap();
+
         CreateMap<ProjectManager, ManagerDetailViewModel>()
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.GetType().Name))
             .ReverseMap();
 
-        CreateMap<ProjectManagerViewModel, ProjectManagerModel>()
-            .ReverseMap();
+        CreateMap<ProjectManagerViewModel, ProjectManagerModel>().ReverseMap();
         
         CreateMap<BaseManagerModel, ManagerCreateModel>().ReverseMap();
         CreateMap<ProjectManagerModel, ManagerCreateModel>().ReverseMap();
@@ -69,66 +70,48 @@ public class MapperModelsConfig : AutoMapper.Profile
             .ForMember(dest => dest.EmployeeId, opt => opt.Ignore())
             .ForMember(dest => dest.Employee, opt => opt.Ignore())
             .ReverseMap();
-
-        CreateMap<SelectionCreateModel, PositionModel>();
-        CreateMap<Position, PositionModel>().ReverseMap();
-        CreateMap<PositionModel, SelectionViewModel>().ReverseMap();
+        
+        CreateMap<SelectionCreateModel, Position>();
+        CreateMap<SelectionModel, Position>().ReverseMap();
+        CreateMap<Position, SelectionViewModel>().ReverseMap();
         CreateMap<SelectionViewModel, Position>()
             .ForMember(m => m.Employees, o => o.Ignore())
             .ReverseMap();
-        
-        CreateMap<SelectionCreateModel, SubdivisionModel>();
-        CreateMap<Subdivision, SubdivisionModel>().ReverseMap();
-        CreateMap<SubdivisionModel, SelectionViewModel>().ReverseMap();
+
+        CreateMap<SelectionCreateModel, Subdivision>();
+        CreateMap<SelectionModel, Subdivision>().ReverseMap();
+        CreateMap<Subdivision, SelectionViewModel>().ReverseMap();
         CreateMap<SelectionViewModel, Subdivision>()
             .ForMember(m => m.Employees, o => o.Ignore())
             .ReverseMap();
-        
-        CreateMap<SelectionCreateModel, ProjectTypeModel>();
-        CreateMap<ProjectType, ProjectTypeModel>().ReverseMap();
-        CreateMap<ProjectTypeModel, SelectionViewModel>().ReverseMap();
+
+        CreateMap<SelectionCreateModel, ProjectType>();
+        CreateMap<SelectionModel, ProjectType>().ReverseMap();
         CreateMap<ProjectType, SelectionViewModel>().ReverseMap();
         CreateMap<SelectionViewModel, ProjectType>()
             .ForMember(m => m.Projects, o => o.Ignore())
             .ReverseMap();
         
-        CreateMap<AbsenceReason, AbsenceReasonModel>().ReverseMap();
-        CreateMap<AbsenceReasonModel, AbsenceReasonViewModel>().ReverseMap();
-        CreateMap<ReasonRequest, AbsenceReasonViewModel>().ReverseMap();
-        CreateMap<AbsenceReason, AbsenceReasonViewModel>().ReverseMap();
-        CreateMap<AbsenceReasonCreateModel, AbsenceReasonModel>().ReverseMap();
-        CreateMap<SelectionViewModel, AbsenceReason>()
-            .ForMember(m => m.LeaveRequests, o => o.Ignore())
-            .ReverseMap();
+        CreateMap<SelectionModel, SelectionViewModel>().ReverseMap();
         
-        CreateMap<Project, ProjectModel>()
-            .ReverseMap();
-        CreateMap<ProjectViewModel, Project>()
-            .ReverseMap();
-        CreateMap<ProjectViewModel, ProjectModel>()
-            .ReverseMap();
-        CreateMap<ProjectCreateModel, ProjectModel>()
-            .ReverseMap();
-        CreateMap<ProjectUpdateModel, ProjectModel>()
-            .ReverseMap();
+        CreateMap<Project, ProjectModel>().ReverseMap();
+        CreateMap<ProjectViewModel, Project>().ReverseMap();
+        CreateMap<ProjectViewModel, ProjectModel>().ReverseMap();
+        CreateMap<ProjectCreateModel, ProjectModel>().ReverseMap();
+        CreateMap<ProjectUpdateModel, ProjectModel>().ReverseMap();
         
-        CreateMap<ApprovalRequest, ApprovalRequestModel>()
-            .ReverseMap();  
-        CreateMap<ApprovalRequestViewModel, ApprovalRequestModel>()
-            .ReverseMap();  
-        CreateMap<ApprovalRequestUpdateModel, ApprovalRequestModel>()
-            .ReverseMap(); 
-        
-        CreateMap<LeaveRequest, LeaveRequestModel>()
-            .ReverseMap();
-        CreateMap<LeaveRequestModel, LeaveRequestViewModel>()
-            .ReverseMap();
-        CreateMap<LeaveRequestFullViewModel, LeaveRequestModel>()
-            .ReverseMap();
-        CreateMap<LeaveRequestCreateModel, LeaveRequestModel>()
-            .ReverseMap();//
-        CreateMap<LeaveRequestUpdateModel, LeaveRequestModel>()
-            .ReverseMap();
+        CreateMap<ApprovalRequest, ApprovalRequestModel>().ReverseMap();
+        CreateMap<ApprovalRequestViewModel, ApprovalRequestModel>().ReverseMap();
+        CreateMap<ApprovalRequestUpdateModel, ApprovalRequestModel>().ReverseMap();
 
+        CreateMap<LeaveRequest, LeaveRequestModel>().ReverseMap();
+        CreateMap<LeaveRequestModel, LeaveRequestViewModel>().ReverseMap();
+        CreateMap<LeaveRequestFullViewModel, LeaveRequestModel>().ReverseMap();
+        CreateMap<LeaveRequestCreateModel, LeaveRequestModel>().ReverseMap();
+        CreateMap<LeaveRequestUpdateModel, LeaveRequestModel>().ReverseMap();
+        
+        CreateMap<SelectionModel, SelectionViewModel>().ReverseMap();
+        CreateMap<SelectionModel, SelectionViewModel>().ReverseMap();
+        CreateMap<SelectionModel, SelectionViewModel>().ReverseMap();
     }
 }
