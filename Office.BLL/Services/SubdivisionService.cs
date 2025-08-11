@@ -11,14 +11,14 @@ namespace Office.BLL.Services;
 
 public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IMapper mapper,IEmployeeRepository employeeRepository) : ISubdivisionService
 {
-    public async Task<SubdivisionModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Subdivision> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var subdivisionDb = await subdivisionRepository.GetByIdAsync(id, cancellationToken);
         
         if (subdivisionDb is null)
             throw new EntityNotFoundException($"Subdivision with Id {id} not found");
         
-        var subdivision = mapper.Map<SubdivisionModel>(subdivisionDb);
+        var subdivision = mapper.Map<Subdivision>(subdivisionDb);
         return subdivision;
     }
     public async Task<List<Subdivision>> GetAllAsync(CancellationToken cancellationToken)
@@ -26,7 +26,7 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
         var subdivision = await subdivisionRepository.GetAll().ToListAsync(cancellationToken);
         return subdivision;
     }
-    public async Task<SubdivisionModel> CreateSubdivisionAsync(SubdivisionModel subdivisionModel,int managerId, CancellationToken cancellationToken = default)
+    public async Task<Subdivision> CreateSubdivisionAsync(Subdivision subdivisionModel,int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
             .SingleOrDefaultAsync(cancellationToken);
@@ -41,7 +41,7 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
         }
         
         var subdivision = await subdivisionRepository.CreateSubdivisionAsync(mapper.Map<Subdivision>(subdivisionModel), cancellationToken);
-        return mapper.Map<SubdivisionModel>(await subdivisionRepository.GetByIdAsync(subdivision.Id, cancellationToken));
+        return mapper.Map<Subdivision>(await subdivisionRepository.GetByIdAsync(subdivision.Id, cancellationToken));
     }
     
     public async Task DeleteSubdivisionAsync(int subdivisionId, int managerId,CancellationToken cancellationToken = default)

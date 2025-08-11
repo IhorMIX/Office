@@ -16,14 +16,18 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
     public async Task<EmployeeModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var employeeDb = await employeeRepository.GetAllEmployees()
-            .SingleOrDefaultAsync(e => e.Id == id, cancellationToken);
-    
+            .Include(e => e.Projects)
+            .ThenInclude(p => p.ProjectManager)
+            .Include(e => e.Projects)
+            .ThenInclude(p => p.ProjectType)
+            .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
+        
         if (employeeDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {id} not found");
-
-        return mapper.Map<EmployeeModel>(employeeDb);
+        
+        var employeeModel = mapper.Map<EmployeeModel>(employeeDb);
+        return employeeModel;
     }
-
 
     public async Task<EmployeeModel> CreateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
     {

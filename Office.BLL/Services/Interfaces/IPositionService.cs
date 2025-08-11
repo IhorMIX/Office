@@ -3,9 +3,9 @@ using Office.DAL.Entity.Selections;
 
 namespace Office.BLL.Services.Interfaces;
 
-public interface IPositionService: IBasicService<PositionModel>
+public interface IPositionService: IBasicService<Position>
 {
-    Task<PositionModel> CreatePositionAsync(PositionModel position,int managerId, CancellationToken cancellationToken = default);
+    Task<Position> CreatePositionAsync(Position position,int managerId, CancellationToken cancellationToken = default);
     Task DeletePositionAsync(int positionId, int managerId, CancellationToken cancellationToken = default);
     Task UpdatePositionAsync(int managerId, Position position,
         CancellationToken cancellationToken = default);

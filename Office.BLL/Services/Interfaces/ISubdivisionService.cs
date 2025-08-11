@@ -3,9 +3,9 @@ using Office.DAL.Entity.Selections;
 
 namespace Office.BLL.Services.Interfaces;
 
-public interface ISubdivisionService: IBasicService<SubdivisionModel>
+public interface ISubdivisionService: IBasicService<Subdivision>
 {
-    Task<SubdivisionModel> CreateSubdivisionAsync(SubdivisionModel subdivisionModel, int managerId,
+    Task<Subdivision> CreateSubdivisionAsync(Subdivision subdivisionModel, int managerId,
         CancellationToken cancellationToken = default);
     Task DeleteSubdivisionAsync(int subdivisionId,int managerId, CancellationToken cancellationToken = default);
     Task UpdateSubdivisionAsync(int managerId, Subdivision subdivision,

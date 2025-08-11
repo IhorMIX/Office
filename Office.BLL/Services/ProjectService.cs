@@ -100,7 +100,7 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
     public async Task AddEmployeesInProjectAsync(int projectManagerId, int projectId, ICollection<int> employeeModelsIds,
         CancellationToken cancellationToken = default)
     {
-        var manager = await employeeRepository.GetAll()
+        var manager = await employeeRepository.GetAllManagers()
             .SingleOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
                 cancellationToken);
         if (manager is null)

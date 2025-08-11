@@ -11,14 +11,14 @@ namespace Office.BLL.Services;
 
 public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IMapper mapper,IEmployeeRepository employeeRepository) : IProjectTypeService
 {
-    public async Task<ProjectTypeModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<ProjectType> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var projectTypeDb = await projectTypeRepository.GetByIdAsync(id, cancellationToken);
         
         if (projectTypeDb is null)
             throw new EntityNotFoundException($"Project Type with Id {id} not found");
         
-        var subdivision = mapper.Map<ProjectTypeModel>(projectTypeDb);
+        var subdivision = mapper.Map<ProjectType>(projectTypeDb);
         return subdivision;
     }
 
