@@ -65,10 +65,14 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
         return await officeDbContext.BaseEmployees
             .Where(e => e is HrManager || e is ProjectManager)
             .Include(r => (r as HrManager)!.Workers)
+            .ThenInclude(w => w.Subdivision)
+            .Include(r => (r as HrManager)!.Workers)
+            .ThenInclude(w => w.Position)
             .Include(r => (r as ProjectManager)!.Projects)
             .ThenInclude(p => p.ProjectType)
             .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
+
 
     public async Task<BaseEmployee> AddEmployeeAsync(BaseEmployee employee, CancellationToken cancellationToken = default)
     {
