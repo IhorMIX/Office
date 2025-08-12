@@ -51,7 +51,10 @@ public class MapperModelsConfig : AutoMapper.Profile
             .ReverseMap();  
         CreateMap<AbsenceReasonViewModel, AbsenceReason>()
             .ReverseMap();
-        
+        CreateMap<AbsenceReason, AbsenceReasonModel>().ReverseMap();
+        CreateMap<AbsenceReasonModel, AbsenceReasonViewModel>()
+            .ReverseMap();
+
         CreateMap<LeaveRequest, LeaveRequestModel>()
             .ReverseMap();
         CreateMap<LeaveRequestModel, LeaveRequestViewModel>()
