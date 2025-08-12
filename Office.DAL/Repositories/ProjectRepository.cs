@@ -16,6 +16,7 @@ public class ProjectRepository(OfficeDbContext officeDbContext) : IProjectReposi
     {
         return await officeDbContext.Projects
             .Include(i => i.Employees)
+            .Include(r=>r.ProjectManager)
             .Include(i => i.ProjectType)
             .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
