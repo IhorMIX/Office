@@ -54,4 +54,11 @@ public class EmployeeController(IEmployeeService employeeService, IMapper mapper
         await employeeService.UpdateEmployeeAsync(managerId, mapper.Map<EmployeeModel>(employeeUpdateModel), cancellationToken);
         return Ok();
     }
+    
+    [HttpPut("{employeeId:int}")]
+    public async Task<IActionResult> DeactivateEmployee(int employeeId, CancellationToken cancellationToken = default)
+    {
+        await employeeService.DeactivateEmployeeAsync(employeeId, cancellationToken);
+        return Ok();
+    }
 }

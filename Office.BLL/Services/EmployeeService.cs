@@ -110,4 +110,12 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
         
         return mapper.Map<List<EmployeeModel>>(employees.OrderBy(r=>r.Status));
     }
+    public async Task DeactivateEmployeeAsync(int employeeId, CancellationToken cancellationToken = default)
+    {
+        var employeeDb = await employeeRepository.GetAllEmployees().SingleOrDefaultAsync(r => r.Id == employeeId, cancellationToken);
+        if (employeeDb is null)
+            throw new EmployeeNotFoundException($"Employee with Id {employeeId} not found");
+        employeeDb.Status = false;
+        await employeeRepository.UpdateEmployeeAsync(employeeDb, cancellationToken);
+    }
 }
