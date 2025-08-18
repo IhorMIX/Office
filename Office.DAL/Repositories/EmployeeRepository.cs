@@ -22,7 +22,7 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
     public IQueryable<BaseManager> GetAllManagers()
     {
         return officeDbContext.Managers.Include(i => i.ApprovalRequests)
-            .AsQueryable();
+            .AsNoTracking();
     }
     
     public IQueryable<Employee> GetAllEmployees()
@@ -31,20 +31,21 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
             .Include(r => r.Position)
             .Include(r => r.Subdivision)
             .Include(r => r.HrManager)
-            .AsQueryable();
+            .AsNoTracking();
     }
+
     public IQueryable<HrManager> GetAllHrManagers()
     {
         return officeDbContext.HrManagers
             .Include(i => i.Workers)
-            .AsQueryable();
+            .AsNoTracking();
     }
     public IQueryable<ProjectManager> GetAllProjectManagers()
     {
         return officeDbContext.ProjectManagers
             .Include(r => r.Projects)
             .ThenInclude(r=>r.ProjectType)
-            .AsQueryable();
+            .AsNoTracking();
     }
     public async Task<BaseEmployee?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
