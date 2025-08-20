@@ -1,3 +1,5 @@
+using Office.BLL.Models.Enums;
+
 namespace Office.Web.Models;
 
 public class LeaveRequestUpdateModel
@@ -7,5 +9,6 @@ public class LeaveRequestUpdateModel
     public int ApprovalRequestId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+    public LeaveRequestStatus Status { get; set; }
     public string Comment { get; set; } = null!;
 }
