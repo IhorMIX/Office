@@ -12,11 +12,11 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
         return officeDbContext.BaseEmployees
             .Include(i=>((Employee)i).Position)
             .Include(r => ((Employee)r).Subdivision)
-            .AsQueryable();
+            .AsNoTracking();
     }
     public IQueryable<BaseManager> GetAdmin()
     {
-        return officeDbContext.Admins.AsQueryable();
+        return officeDbContext.Admins.AsNoTracking();
     }
     
     public IQueryable<BaseManager> GetAllManagers()
@@ -31,7 +31,7 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
             .Include(r => r.Position)
             .Include(r => r.Subdivision)
             .Include(r => r.HrManager)
-            .AsNoTracking();
+            .AsQueryable();
     }
 
     public IQueryable<HrManager> GetAllHrManagers()
@@ -64,6 +64,7 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
     public async Task<BaseEmployee?> GetManagerByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await officeDbContext.BaseEmployees
+            .AsNoTracking()
             .Where(e => e is HrManager || e is ProjectManager)
             .Include(r => (r as HrManager)!.Workers)
             .ThenInclude(w => w.Position)
