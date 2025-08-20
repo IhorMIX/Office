@@ -99,8 +99,6 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<BaseManager, ManagerViewModel>()
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.GetType().Name))
             .ReverseMap();
-
-
         
         CreateMap<HrManagerModel, ManagerViewModel>()
             .ReverseMap();
@@ -117,6 +115,15 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<SelectionViewModel, ProjectType>()
             .ForMember(m => m.Projects, o => o.Ignore())
             .ReverseMap();
+        
+        CreateMap<SelectionCreateModel, Subdivision>()
+            .ForMember(dest => dest.Employees, opt => opt.Ignore());
+        CreateMap<SelectionCreateModel, Position>()
+            .ForMember(dest => dest.Employees, opt => opt.Ignore());
+        CreateMap<SelectionCreateModel, ProjectType>()
+            .ForMember(dest => dest.Projects, opt => opt.Ignore());
+        CreateMap<SelectionCreateModel, AbsenceReason>()
+            .ForMember(dest => dest.LeaveRequests, opt => opt.Ignore());
         
         CreateMap<SelectionViewModel, SelectionModel>()
             .ReverseMap();
