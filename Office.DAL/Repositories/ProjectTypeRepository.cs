@@ -8,7 +8,7 @@ public class ProjectTypeRepository(OfficeDbContext officeDbContext) : IProjectTy
 {
     public IQueryable<ProjectType> GetAll()
     {
-        return officeDbContext.ProjectTypes.AsQueryable();
+        return officeDbContext.ProjectTypes.AsNoTracking();
     }
 
     public async Task<ProjectType?> GetByIdAsync(int id, CancellationToken cancellationToken = default)

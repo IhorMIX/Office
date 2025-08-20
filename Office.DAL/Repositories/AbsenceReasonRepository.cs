@@ -8,7 +8,7 @@ public class AbsenceReasonRepository(OfficeDbContext officeDbContext) : IAbsence
 {
     public IQueryable<AbsenceReason> GetAll()
     {
-        return officeDbContext.AbsenceReasons.AsQueryable();
+        return officeDbContext.AbsenceReasons.AsNoTracking();
     }
 
     public async Task<AbsenceReason?> GetByIdAsync(int id, CancellationToken cancellationToken = default)

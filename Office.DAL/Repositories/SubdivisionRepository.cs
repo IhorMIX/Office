@@ -8,7 +8,7 @@ public class SubdivisionRepository(OfficeDbContext officeDbContext) : ISubdivisi
 {
     public IQueryable<Subdivision> GetAll()
     {
-        return officeDbContext.Subdivisions.AsQueryable();
+        return officeDbContext.Subdivisions.AsNoTracking();
     }
 
     public async Task<Subdivision?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
