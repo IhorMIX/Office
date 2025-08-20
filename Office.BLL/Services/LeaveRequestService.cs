@@ -67,41 +67,49 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
         return mapper.Map<LeaveRequestModel>(requestDb);
     }
 
-    public async Task<LeaveRequestModel> UpdateLeaveRequestAsync(int employeeId, LeaveRequestModel leaveRequestModel,
+    public async Task<LeaveRequestModel> UpdateLeaveRequestAsync(
+        int employeeId, 
+        LeaveRequestModel leaveRequestModel,
         CancellationToken cancellationToken = default)
     {
         var employeeDb = await employeeRepository.GetAll()
-            .FirstOrDefaultAsync(r => r.Id == employeeId && r is Employee, cancellationToken);
-        if (employeeDb is not Employee)
-            throw new NotPermissionException("You don't have permissions");
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.Id == employeeId, cancellationToken);
 
+        if (employeeDb is null)
+            throw new NotPermissionException("User not found");
+        
         var leaveRequestDb = await leaveRequestRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == leaveRequestModel.Id && r.EmployeeId == employeeId, cancellationToken);
+            .SingleOrDefaultAsync(r => r.Id == leaveRequestModel.Id, cancellationToken);
+
         if (leaveRequestDb is null)
             throw new RequestException($"Leave request with Id {leaveRequestModel.Id} not found");
-
+        
+        if (employeeDb is Employee && leaveRequestDb.EmployeeId != employeeId)
+            throw new NotPermissionException("You don't have permissions");
+        
         foreach (var propertyMap in ReflectionHelper.WidgetUtil<LeaveRequestModel, LeaveRequest>.PropertyMap)
         {
-            var userProperty = propertyMap.Item1;
-            var userDbProperty = propertyMap.Item2;
+            var sourceProp = propertyMap.Item1;
+            var targetProp = propertyMap.Item2;
 
-            var userSourceValue = userProperty.GetValue(leaveRequestModel);
-            var userTargetValue = userDbProperty.GetValue(leaveRequestDb);
+            var sourceValue = sourceProp.GetValue(leaveRequestModel);
+            var targetValue = targetProp.GetValue(leaveRequestDb);
 
-            if (userProperty.Name != "EmployeeId" && 
-                !Equals(userSourceValue, new DateTime()) &&
-                userSourceValue != null && 
-                !ReferenceEquals(userSourceValue, "") &&
-                !userSourceValue.Equals(userTargetValue))
+            if (sourceProp.Name != "EmployeeId" &&
+                sourceValue != null &&
+                !(sourceValue is string str && str == "") &&
+                !Equals(sourceValue, default(DateTime)) &&
+                !Equals(sourceValue, targetValue))
             {
-                userDbProperty.SetValue(leaveRequestDb, userSourceValue);
+                targetProp.SetValue(leaveRequestDb, sourceValue);
             }
         }
-
+        
         await leaveRequestRepository.UpdateLeaveRequestAsync(leaveRequestDb, cancellationToken);
         return mapper.Map<LeaveRequestModel>(leaveRequestDb);
     }
-
+    
     public async Task DeleteLeaveRequestAsync(int employeeId, int leaveRequestId, CancellationToken cancellationToken = default)
     {
         var employeeDb = await employeeRepository.GetAll()
