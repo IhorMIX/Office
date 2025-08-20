@@ -12,7 +12,7 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
         return officeDbContext.BaseEmployees
             .Include(i=>((Employee)i).Position)
             .Include(r => ((Employee)r).Subdivision)
-            .AsNoTracking();
+            .AsQueryable();
     }
     public IQueryable<BaseManager> GetAdmin()
     {
