@@ -10,7 +10,7 @@ public class LeaveRequestRepository(OfficeDbContext officeDbContext) : ILeaveReq
     {
         return officeDbContext.LeaveRequests.Include(r => r.AbsenceReason)
             .Include(r => r.ApprovalRequest).ThenInclude(r=>r.Approver)
-            .AsQueryable();
+            .AsNoTracking();
     }
 
     public async Task<LeaveRequest?> GetByIdAsync(int id, CancellationToken cancellationToken = default)

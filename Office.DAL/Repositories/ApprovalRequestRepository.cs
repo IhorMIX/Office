@@ -8,7 +8,7 @@ public class ApprovalRequestRepository(OfficeDbContext officeDbContext) : IAppro
 {
     public IQueryable<ApprovalRequest> GetAll()
     {
-        return officeDbContext.ApprovalRequests.AsQueryable();
+        return officeDbContext.ApprovalRequests.AsNoTracking();
     }
 
     public async Task<ApprovalRequest?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
