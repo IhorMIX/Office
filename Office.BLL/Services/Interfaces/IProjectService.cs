@@ -7,7 +7,8 @@ public interface IProjectService: IBasicService<ProjectModel>
     Task<ProjectModel> CreateProjectAsync(ProjectModel projectModel, int managerId,
         CancellationToken cancellationToken = default);
     Task DeleteProjectAsync(int projectId, int managerId, CancellationToken cancellationToken = default);
-
+    Task DeactivateProjectAsync(int projectId, int projectManagerId,
+        CancellationToken cancellationToken = default);
     Task<ProjectModel> UpdateProjectAsync(int projectManagerId, ProjectModel projectModel,
         CancellationToken cancellationToken = default);
 

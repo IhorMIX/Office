@@ -51,7 +51,23 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
             throw new EntityNotFoundException($"Project with Id {projectId} not found");
         await projectRepository.DeleteProjectAsync(projectDb, cancellationToken);
     }
+    public async Task DeactivateProjectAsync(int projectId, int projectManagerId,
+        CancellationToken cancellationToken = default)
+    {
+        var managerDb = await employeeRepository.GetAll()
+            .SingleOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
+                cancellationToken);
+        if (managerDb is not (ProjectManager or Admin))
+            throw new ManagerException($"Project manager or admin with Id {projectManagerId} not found");
 
+        var projectDb = await projectRepository.GetByIdAsync(projectId, cancellationToken);
+
+        if (projectDb is null)
+            throw new EntityNotFoundException($"Project with Id {projectId} not found");
+        projectDb.Status = false;
+
+        await projectRepository.UpdateProjectAsync(projectDb, cancellationToken);
+    }
     public async Task<ProjectModel> UpdateProjectAsync(int projectManagerId, ProjectModel projectModel,
         CancellationToken cancellationToken = default)
     {

@@ -37,6 +37,14 @@ public class ProjectController(IProjectService projectService, IMapper mapper)
         return Ok();
     }
     
+    [HttpPut("{projectId:int}")]
+    public async Task<IActionResult> DeactivateProject(int projectId, CancellationToken cancellationToken = default)
+    {
+        var managerId = User.GetUserId();
+        await projectService.DeactivateProjectAsync(projectId,managerId,cancellationToken);
+        return Ok();
+    }
+    
     [HttpPut("employees")]
     public async Task<IActionResult> AddEmployeesProject([FromBody]AddEmployeesModel addEmployeesModel, CancellationToken cancellationToken = default)
     {
