@@ -39,7 +39,7 @@ public class PositionController(IPositionService positionService, IMapper mapper
     }
     
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] SelectionViewModel position,
+    public async Task<IActionResult> UpdatePosition([FromBody] SelectionViewModel position,
         CancellationToken cancellationToken = default)
     {
         var userId = User.GetUserId();
