@@ -22,7 +22,7 @@ public class ProjectController(IProjectService projectService, IMapper mapper)
     }
 
     [HttpPost("create-project")]
-    public async Task<IActionResult> CreatePosition([FromBody] ProjectCreateModel projectCreateModel, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreateProject([FromBody] ProjectCreateModel projectCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
         var result = await projectService.CreateProjectAsync(mapper.Map<ProjectModel>(projectCreateModel), adminId, cancellationToken);
@@ -30,7 +30,7 @@ public class ProjectController(IProjectService projectService, IMapper mapper)
     }
     
     [HttpDelete("{projectId:int}")]
-    public async Task<IActionResult> DeletePosition(int projectId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> DeleteProject(int projectId, CancellationToken cancellationToken = default)
     {
         var managerId = User.GetUserId();
         await projectService.DeleteProjectAsync(projectId,managerId,cancellationToken);
