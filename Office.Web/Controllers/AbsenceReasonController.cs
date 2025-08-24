@@ -39,7 +39,7 @@ public class AbsenceReasonController(IAbsenceReasonService absenceReasonService,
     }
     
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] AbsenceReasonViewModel absenceReason,
+    public async Task<IActionResult> UpdateAbsenceReason([FromBody] AbsenceReasonViewModel absenceReason,
         CancellationToken cancellationToken = default)
     {
         var userId = User.GetUserId();
