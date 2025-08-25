@@ -28,7 +28,7 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
     public async Task<LeaveRequestModel> GetByRequestIdAsync(int employeeId, int requestId, CancellationToken cancellationToken = default)
     {
         var leaveRequestsDb = await leaveRequestRepository.GetAll().Include(r => r.Employee)
-            .SingleOrDefaultAsync(r => r.Id == requestId, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == requestId, cancellationToken);
         
         return mapper.Map<LeaveRequestModel>(leaveRequestsDb);
     }
@@ -80,7 +80,7 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
             throw new NotPermissionException("User not found");
         
         var leaveRequestDb = await leaveRequestRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == leaveRequestModel.Id, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == leaveRequestModel.Id, cancellationToken);
 
         if (leaveRequestDb is null)
             throw new RequestException($"Leave request with Id {leaveRequestModel.Id} not found");
@@ -121,8 +121,8 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
             .Include(r => r.Employee);
         
         LeaveRequest? leaveRequestDb = employeeDb is Employee
-            ? await query.SingleOrDefaultAsync(r => r.EmployeeId == employeeId && r.Id == leaveRequestId, cancellationToken)
-            : await query.SingleOrDefaultAsync(r => r.Id == leaveRequestId, cancellationToken);
+            ? await query.FirstOrDefaultAsync(r => r.EmployeeId == employeeId && r.Id == leaveRequestId, cancellationToken)
+            : await query.FirstOrDefaultAsync(r => r.Id == leaveRequestId, cancellationToken);
 
         if (leaveRequestDb is null)
             throw new RequestException($"Leave request with Id {leaveRequestId} not found or access denied.");

@@ -27,7 +27,7 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
         CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == managerId && (r is ProjectManager || r is Admin),
+            .FirstOrDefaultAsync(r => r.Id == managerId && (r is ProjectManager || r is Admin),
                 cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
@@ -41,7 +41,7 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
     public async Task DeleteProjectAsync(int projectId, int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -55,7 +55,7 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
         CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
+            .FirstOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
                 cancellationToken);
         if (managerDb is not (ProjectManager or Admin))
             throw new ManagerException($"Project manager or admin with Id {projectManagerId} not found");
@@ -72,13 +72,13 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
         CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
+            .FirstOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
                 cancellationToken);
         if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
 
         var updateProjectManager = await employeeRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == projectModel.ProjectManagerId && (r is ProjectManager || r is Admin),
+            .FirstOrDefaultAsync(r => r.Id == projectModel.ProjectManagerId && (r is ProjectManager || r is Admin),
                 cancellationToken);
         if (updateProjectManager is null)
             throw new ManagerException(
@@ -117,7 +117,7 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
         CancellationToken cancellationToken = default)
     {
         var manager = await employeeRepository.GetAllManagers()
-            .SingleOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
+            .FirstOrDefaultAsync(r => r.Id == projectManagerId && (r is ProjectManager || r is Admin),
                 cancellationToken);
         if (manager is null)
             throw new NotPermissionException("You don't have permissions");
@@ -144,7 +144,7 @@ public class ProjectService(IProjectRepository projectRepository, IMapper mapper
     public async Task<List<ProjectModel>> GetAllAsync(int userId, CancellationToken cancellationToken = default)
     {
         var userDb = await employeeRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == userId, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == userId, cancellationToken);
         if (userDb is null)
             throw new EntityNotFoundException($"Project manager or admin with Id {userId} not found");
 

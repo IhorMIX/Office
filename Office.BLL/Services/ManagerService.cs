@@ -23,7 +23,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<BaseManagerModel> CreateManagerAsync(int adminId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
     {
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -54,7 +54,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<BaseManagerModel> UpdateManagerAsync(int managerId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
     {
-        var updater = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == managerId && r is Admin, cancellationToken);
+        var updater = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == managerId && r is Admin, cancellationToken);
         if (updater is null)
             throw new NotPermissionException("You don't have permissions");
 
@@ -92,7 +92,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
             throw new NotPermissionException("You can't delete yourself");
         
         var adminUser = await employeeRepository.GetAllManagers()
-            .SingleOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
     
         if (adminUser is null)
             throw new NotPermissionException("You don't have permissions");
@@ -108,7 +108,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
     //adminId - admin or HR
     public async Task<List<BaseManagerModel>> GetAll(int adminId, CancellationToken cancellationToken = default)
     {
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -120,7 +120,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<List<HrManagerModel>> GetHrManagers(int adminId, CancellationToken cancellationToken = default)
     {
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -131,7 +131,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<List<ProjectManagerModel>> GetProjectManagers(int adminId, CancellationToken cancellationToken = default)
     {
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -141,7 +141,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
     
     public async Task<BaseManager> GetAdminAsync(CancellationToken cancellation = default)
     {
-        var admin = await employeeRepository.GetAdmin().SingleOrDefaultAsync(cancellation);;
+        var admin = await employeeRepository.GetAdmin().FirstOrDefaultAsync(cancellation);;
         return mapper.Map<BaseManager>(admin);
     }
 }

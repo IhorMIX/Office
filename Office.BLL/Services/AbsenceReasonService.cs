@@ -29,7 +29,7 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
     public async Task<AbsenceReason> CreateAbsenceReasonAsync(string description, int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new ManagerException($"Admin or Hr Manager with Id {managerId} not found");
         
@@ -51,7 +51,7 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
     public async Task DeleteAbsenceReasonAsync(int absenceReasonId, int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new ManagerException($"Admin or Hr Manager with Id {managerId} not found");
         
@@ -65,13 +65,13 @@ public class AbsenceReasonService(IAbsenceReasonRepository absenceReasonReposito
     public async Task UpdateAbsenceReasonAsync(int managerId, AbsenceReason absenceReason, CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAllManagers()
-            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
+            .FirstOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
                 cancellationToken);
         if (managerDb is null)
             throw new ManagerException($"Hr manager or admin with Id {managerId} not found");
 
         var absenceReasonCheck = await absenceReasonRepository.GetAll().Where(r => r.ReasonDescription == absenceReason.ReasonDescription)
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (absenceReasonCheck != null)
             throw new AlreadyDataException($"Absence reason with name {absenceReason.ReasonDescription} created already");
         

@@ -20,7 +20,7 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
             .ThenInclude(p => p.ProjectManager)
             .Include(e => e.Projects)
             .ThenInclude(p => p.ProjectType)
-            .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
         
         if (employeeDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {id} not found");
@@ -32,7 +32,7 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
     public async Task<EmployeeModel> CreateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -53,12 +53,12 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
     public async Task<EmployeeModel> UpdateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
     {
         var updater = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (updater is null)
             throw new NotPermissionException("You don't have permissions");
 
         var employeeDb = await employeeRepository.GetAllEmployees()
-            .SingleOrDefaultAsync(r => r.Id == employeeModel.Id, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == employeeModel.Id, cancellationToken);
 
         if (employeeDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {employeeModel.Id} not found");
@@ -88,7 +88,7 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
     public async Task DeleteEmployeeAsync(int id, int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -101,7 +101,7 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
     }
     public async Task<List<EmployeeModel>> GetAllAsync(int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && !(r is Employee)).SingleOrDefaultAsync(cancellationToken);
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && !(r is Employee)).FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
 
@@ -112,7 +112,7 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
     }
     public async Task DeactivateEmployeeAsync(int employeeId, CancellationToken cancellationToken = default)
     {
-        var employeeDb = await employeeRepository.GetAllEmployees().SingleOrDefaultAsync(r => r.Id == employeeId, cancellationToken);
+        var employeeDb = await employeeRepository.GetAllEmployees().FirstOrDefaultAsync(r => r.Id == employeeId, cancellationToken);
         if (employeeDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {employeeId} not found");
         employeeDb.Status = false;

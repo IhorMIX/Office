@@ -29,7 +29,7 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
     public async Task<Subdivision> CreateSubdivisionAsync(Subdivision subdivisionModel,int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -47,7 +47,7 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
     public async Task DeleteSubdivisionAsync(int subdivisionId, int managerId,CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -61,13 +61,13 @@ public class SubdivisionService(ISubdivisionRepository subdivisionRepository, IM
     public async Task UpdateSubdivisionAsync(int managerId, Subdivision subdivision, CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAllManagers()
-            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
+            .FirstOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
                 cancellationToken);
         if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
 
         var subdivisionCheck = await subdivisionRepository.GetAll().Where(r => r.Name == subdivision.Name)
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (subdivisionCheck != null)
             throw new AlreadyDataException($"Subdivision with name {subdivision.Name} created already");
         

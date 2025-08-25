@@ -27,7 +27,7 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
     public async Task<List<ApprovalRequestModel>> GetApprovalRequestsAsync(int userId, CancellationToken cancellationToken = default)
     {
         var userDb = await employeeRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == userId, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == userId, cancellationToken);
         if (userDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {userId} not found");
         
@@ -65,7 +65,7 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
         CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is Employee), cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == managerId && !(r is Employee), cancellationToken);
         if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -100,7 +100,7 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
         CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAll()
-            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is Employee), cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == managerId && !(r is Employee), cancellationToken);
         if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
         

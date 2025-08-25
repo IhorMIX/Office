@@ -31,7 +31,7 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
     public async Task<ProjectType> CreateProjectTypeAsync(int managerId, string projectName, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -52,7 +52,7 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
     public async Task DeleteProjectTypeAsync(int projectTypeId, int managerId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -66,13 +66,13 @@ public class ProjectTypeService(IProjectTypeRepository projectTypeRepository, IM
     public async Task UpdateProjectTypeAsync(int managerId, ProjectType projectType, CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAllManagers()
-            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is HrManager),
+            .FirstOrDefaultAsync(r => r.Id == managerId && !(r is HrManager),
                 cancellationToken);
         if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
 
         var projectTypeCheck = await projectTypeRepository.GetAll().Where(r => r.Name == projectType.Name)
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (projectTypeCheck != null)
             throw new AlreadyDataException($"ProjectType with name {projectType.Name} created already");
         
