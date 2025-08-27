@@ -24,42 +24,41 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
         return approvalRequestModel;
     }
 
-    public async Task<List<ApprovalRequestModel>> GetApprovalRequestsAsync(int userId, CancellationToken cancellationToken = default)
+    public async Task<List<ApprovalRequestModel>> GetApprovalRequestsAsync(
+        int userId,
+        CancellationToken cancellationToken = default)
     {
         var userDb = await employeeRepository.GetAll()
             .FirstOrDefaultAsync(r => r.Id == userId, cancellationToken);
+
         if (userDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {userId} not found");
+
+        var query = approvalRequestRepository.GetAll()
+            .Include(r => r.Approver)
+            .Include(r => r.LeaveRequest)
+            .ThenInclude(lr => lr.Employee);
         
-        var requests = userDb switch
+        if (userDb is Admin)
         {
-            HrManager => await approvalRequestRepository.GetAll()
-                .Include(r => r.Approver)
-                .Include(r => r.LeaveRequest)
-                .Where(r => r.ApproverId == userId)
-                .ToListAsync(cancellationToken),
-
-            ProjectManager => await approvalRequestRepository.GetAll()
-                .Include(r => r.Approver)
-                .Include(r => r.LeaveRequest)
-                .Where(r => r.ApproverId == userId)
-                .ToListAsync(cancellationToken),
-
-            Employee => await approvalRequestRepository.GetAll()
-                .Include(r => r.Approver)
-                .Include(r => r.LeaveRequest)
-                .Where(r => r.LeaveRequest.EmployeeId == userId)
-                .ToListAsync(cancellationToken),
-
-            Admin => await approvalRequestRepository.GetAll()
-                .Include(r => r.Approver)
-                .Include(r=> r.LeaveRequest)
-                .ToListAsync(cancellationToken),
-
-            _ => throw new EmployeeNotFoundException($"Employee with Id {userId} not found")
-        };
-        return mapper.Map<List<ApprovalRequestModel>>(requests);
+            return mapper.Map<List<ApprovalRequestModel>>(
+                await query.ToListAsync(cancellationToken));
+        }
+        
+        if (userDb is Employee && userDb is not HrManager && userDb is not ProjectManager)
+        {
+            return mapper.Map<List<ApprovalRequestModel>>(
+                await query
+                    .Where(r => r.LeaveRequest.EmployeeId == userId)
+                    .ToListAsync(cancellationToken));
+        }
+        
+        return mapper.Map<List<ApprovalRequestModel>>(
+            await query
+                .Where(r => r.ApproverId == userId || r.LeaveRequest.EmployeeId == userId)
+                .ToListAsync(cancellationToken));
     }
+
 
     public async Task<ApprovalRequestModel> ApproveLeaveRequestAsync(int managerId, int requestId, string comment,
         CancellationToken cancellationToken = default)
