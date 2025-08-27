@@ -89,4 +89,12 @@ public class ManagerController(IManagerService managerService,IEmployeeRepositor
         var admin = await managerService.GetAdminAsync(cancellationToken);
         return Ok(mapper.Map<ManagerViewModel>(admin));
     }
+    
+    [HttpGet("approvers")]
+    public async Task<IActionResult> GetApprovers(CancellationToken cancellationToken = default)
+    {
+        var userId = User.GetUserId();
+        var approvedRequest = await managerService.GetApproversAsync(userId, cancellationToken);
+        return Ok(mapper.Map<List<ManagerViewModel>>(approvedRequest));
+    }
 }

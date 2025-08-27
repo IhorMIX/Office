@@ -144,4 +144,26 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
         var admin = await employeeRepository.GetAdmin().FirstOrDefaultAsync(cancellation);;
         return mapper.Map<BaseManager>(admin);
     }
+    public async Task<List<BaseManager>> GetApproversAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        var userDb = await employeeRepository.GetAllEmployees()
+            .SingleOrDefaultAsync(r => r.Id == userId, cancellationToken);
+        if (userDb is null)
+            throw new ManagerException($"Manager or admin with Id {userId} not found");
+
+
+        var hrManagersTask = await employeeRepository.GetAllManagers()
+            .OfType<HrManager>()
+            .Where(r => r.Workers.Any(i => i.Id == userId))
+            .ToListAsync(cancellationToken);
+
+        var projectManagersTask = await employeeRepository.GetAllManagers()
+            .OfType<ProjectManager>()
+            .Where(r => r.Projects.Any(j => j.Employees.Any(d => d.Id == userId)))
+            .ToListAsync(cancellationToken);
+        
+        var approvers = hrManagersTask.Concat<BaseManager>(projectManagersTask).ToList();
+
+        return approvers;
+    }
 }

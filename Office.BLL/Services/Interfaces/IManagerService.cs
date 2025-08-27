@@ -14,4 +14,5 @@ public interface IManagerService
     Task<List<HrManagerModel>> GetHrManagers(int adminId, CancellationToken cancellationToken = default);
     Task<List<ProjectManagerModel>> GetProjectManagers(int adminId, CancellationToken cancellationToken = default);
     Task<BaseManager> GetAdminAsync(CancellationToken cancellation = default);
+    Task<List<BaseManager>> GetApproversAsync(int userId, CancellationToken cancellationToken = default);
 }
