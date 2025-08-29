@@ -11,7 +11,7 @@ using Office.DAL.Repositories.Intefaces;
 namespace Office.BLL.Services;
 
 public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRepository,
-    IEmployeeRepository employeeRepository, IMapper mapper, ILeaveRequestRepository leaveRequestRepository): IApprovalRequestService
+    IEmployeeRepository employeeRepository, IMapper mapper): IApprovalRequestService
 {
     public async Task<ApprovalRequestModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
@@ -24,47 +24,48 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
         return approvalRequestModel;
     }
 
-    public async Task<List<ApprovalRequestModel>> GetApprovalRequestsAsync(int userId, CancellationToken cancellationToken = default)
+    public async Task<List<ApprovalRequestModel>> GetApprovalRequestsAsync(
+        int userId,
+        CancellationToken cancellationToken = default)
     {
-        var userDb = await employeeRepository.GetByIdAsync(userId, cancellationToken);
+        var userDb = await employeeRepository.GetAll()
+            .FirstOrDefaultAsync(r => r.Id == userId, cancellationToken);
+
         if (userDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {userId} not found");
+
+        var query = approvalRequestRepository.GetAll()
+            .Include(r => r.Approver)
+            .Include(r => r.LeaveRequest)
+            .ThenInclude(lr => lr.Employee);
         
-        var requests = userDb switch
+        if (userDb is Admin)
         {
-            HrManager => await approvalRequestRepository.GetAll()
-                .Include(r => r.Approver)
-                .Include(r => r.LeaveRequest)
-                .Where(r => r.ApproverId == userId)
-                .ToListAsync(cancellationToken),
-
-            ProjectManager => await approvalRequestRepository.GetAll()
-                .Include(r => r.Approver)
-                .Include(r => r.LeaveRequest)
-                .Where(r => r.ApproverId == userId)
-                .ToListAsync(cancellationToken),
-
-            Employee => await approvalRequestRepository.GetAll()
-                .Include(r => r.Approver)
-                .Include(r => r.LeaveRequest)
-                .Where(r => r.LeaveRequest.EmployeeId == userId)
-                .ToListAsync(cancellationToken),
-
-            Admin => await approvalRequestRepository.GetAll()
-                .Include(r => r.Approver)
-                .Include(r=> r.LeaveRequest)
-                .ToListAsync(cancellationToken),
-
-            _ => throw new EmployeeNotFoundException($"Employee with Id {userId} not found")
-        };
-        return mapper.Map<List<ApprovalRequestModel>>(requests);
+            return mapper.Map<List<ApprovalRequestModel>>(
+                await query.ToListAsync(cancellationToken));
+        }
+        
+        if (userDb is Employee && userDb is not HrManager && userDb is not ProjectManager)
+        {
+            return mapper.Map<List<ApprovalRequestModel>>(
+                await query
+                    .Where(r => r.LeaveRequest.EmployeeId == userId)
+                    .ToListAsync(cancellationToken));
+        }
+        
+        return mapper.Map<List<ApprovalRequestModel>>(
+            await query
+                .Where(r => r.ApproverId == userId || r.LeaveRequest.EmployeeId == userId)
+                .ToListAsync(cancellationToken));
     }
+
 
     public async Task<ApprovalRequestModel> ApproveLeaveRequestAsync(int managerId, int requestId, string comment,
         CancellationToken cancellationToken = default)
     {
-        var managerDb = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (managerDb is not Admin)
+        var managerDb = await employeeRepository.GetAll()
+            .FirstOrDefaultAsync(r => r.Id == managerId && !(r is Employee), cancellationToken);
+        if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
         
         var requestDb = await approvalRequestRepository.GetByIdAsync(requestId, cancellationToken);
@@ -85,7 +86,7 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
 
         employee.OutOfOfficeBalance -= daysOff;
         
-        requestDb.Status = ApprovalRequestStatus.Approved;
+        requestDb.ApprovalRequestStatus = ApprovalRequestStatus.Approved;
         requestDb.Comment = comment;
         
         await employeeRepository.UpdateEmployeeAsync(employee, cancellationToken);
@@ -94,11 +95,12 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
         return mapper.Map<ApprovalRequestModel>(requestDb);
     }
 
-    public async Task<ApprovalRequestModel> DeclineLeaveRequestAsync(int managerId, int requestId, string comment,
+    public async Task<ApprovalRequestModel> RejectLeaveRequestAsync(int managerId, int requestId, string comment,
         CancellationToken cancellationToken = default)
     {
-        var managerDb = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (managerDb is not Admin)
+        var managerDb = await employeeRepository.GetAll()
+            .FirstOrDefaultAsync(r => r.Id == managerId && !(r is Employee), cancellationToken);
+        if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
         
         var requestDb = await approvalRequestRepository.GetByIdAsync(requestId, cancellationToken);
@@ -111,7 +113,7 @@ public class ApprovalRequestService(IApprovalRequestRepository approvalRequestRe
         if(requestDb.ApproverId != managerId)
             throw new ManagerException($"manger with Id {requestId} is not approver");
         
-        requestDb.Status = ApprovalRequestStatus.Rejected;
+        requestDb.ApprovalRequestStatus = ApprovalRequestStatus.Rejected;
         requestDb.Comment = comment;
         await approvalRequestRepository.UpdateApprovalRequestAsync(requestDb, cancellationToken);
         return mapper.Map<ApprovalRequestModel>(requestDb);

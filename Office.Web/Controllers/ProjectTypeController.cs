@@ -46,4 +46,11 @@ public class ProjectTypeController(IProjectTypeService projectTypeService, IMapp
         await projectTypeService.UpdateProjectTypeAsync(userId, mapper.Map<ProjectType>(projectType), cancellationToken);
         return Ok();
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetProjectTypes(CancellationToken cancellationToken = default)
+    {
+        var absenceReasons = await projectTypeService.GetAllAsync(cancellationToken);
+        return Ok(mapper.Map<List<SelectionViewModel>>(absenceReasons));
+    }
 }

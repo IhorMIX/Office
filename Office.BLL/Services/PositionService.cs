@@ -13,21 +13,27 @@ namespace Office.BLL.Services;
 
 public class PositionService(IPositionRepository positionRepository, IMapper mapper, IEmployeeRepository employeeRepository) : IPositionService
 {
-    public async Task<PositionModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Position> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var positionDb = await positionRepository.GetByIdAsync(id, cancellationToken);
         
         if (positionDb is null)
             throw new EntityNotFoundException($"Position with Id {id} not found");
         
-        var position = mapper.Map<PositionModel>(positionDb);
+        var position = mapper.Map<Position>(positionDb);
         return position;
     }
-
-    public async Task<PositionModel> CreatePositionAsync(PositionModel positionModel,int managerId, CancellationToken cancellationToken = default)
+    
+    public async Task<List<Position>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (HrManager or Admin))
+        var subdivision = await positionRepository.GetAll().ToListAsync(cancellationToken);
+        return subdivision;
+    }
+    public async Task<Position> CreatePositionAsync(Position positionModel,int managerId, CancellationToken cancellationToken = default)
+    {
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
+            .FirstOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var positionDb = await positionRepository.GetAll().FirstOrDefaultAsync(i => i.Name == positionModel.Name, cancellationToken);
@@ -38,13 +44,14 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
         }
         
         positionDb = await positionRepository.CreatePositionAsync(mapper.Map<Position>(positionModel), cancellationToken);
-        return mapper.Map<PositionModel>(await positionRepository.GetByIdAsync(positionDb.Id, cancellationToken));
+        return mapper.Map<Position>(await positionRepository.GetByIdAsync(positionDb.Id, cancellationToken));
     }
 
     public async Task DeletePositionAsync(int positionId,int managerId, CancellationToken cancellationToken = default)
     {
-        var creator = await employeeRepository.GetByIdAsync(managerId, cancellationToken);
-        if (creator is not (HrManager or Admin))
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))
+            .FirstOrDefaultAsync(cancellationToken);
+        if (creator is null)
             throw new NotPermissionException("You don't have permissions");
         
         var positionDb = await positionRepository.GetByIdAsync(positionId, cancellationToken);
@@ -57,13 +64,13 @@ public class PositionService(IPositionRepository positionRepository, IMapper map
     public async Task UpdatePositionAsync(int managerId, Position position, CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAllManagers()
-            .SingleOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
+            .FirstOrDefaultAsync(r => r.Id == managerId && !(r is ProjectManager),
                 cancellationToken);
         if (managerDb is null)
             throw new NotPermissionException("You don't have permissions");
 
         var positionCheck = await positionRepository.GetAll().Where(r => r.Name == position.Name)
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
         if (positionCheck != null)
             throw new AlreadyDataException($"Position with name {position.Name} created already");
         

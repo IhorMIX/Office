@@ -2,6 +2,7 @@ namespace Office.BLL.Models.Enums;
 
 public enum LeaveRequestStatus
 {
-    Submit = default,
+    New = 0,
+    Submit,
     Cancel
 }

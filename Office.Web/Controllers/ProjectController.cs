@@ -22,7 +22,7 @@ public class ProjectController(IProjectService projectService, IMapper mapper)
     }
 
     [HttpPost("create-project")]
-    public async Task<IActionResult> CreatePosition([FromBody] ProjectCreateModel projectCreateModel, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreateProject([FromBody] ProjectCreateModel projectCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
         var result = await projectService.CreateProjectAsync(mapper.Map<ProjectModel>(projectCreateModel), adminId, cancellationToken);
@@ -30,10 +30,18 @@ public class ProjectController(IProjectService projectService, IMapper mapper)
     }
     
     [HttpDelete("{projectId:int}")]
-    public async Task<IActionResult> DeletePosition(int projectId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> DeleteProject(int projectId, CancellationToken cancellationToken = default)
     {
         var managerId = User.GetUserId();
         await projectService.DeleteProjectAsync(projectId,managerId,cancellationToken);
+        return Ok();
+    }
+    
+    [HttpPut("{projectId:int}")]
+    public async Task<IActionResult> DeactivateProject(int projectId, CancellationToken cancellationToken = default)
+    {
+        var managerId = User.GetUserId();
+        await projectService.DeactivateProjectAsync(projectId,managerId,cancellationToken);
         return Ok();
     }
     
@@ -51,5 +59,13 @@ public class ProjectController(IProjectService projectService, IMapper mapper)
         var userId = User.GetUserId();
         var project= await projectService.UpdateProjectAsync(userId,mapper.Map<ProjectModel>(projectCreateModel), cancellationToken);
         return Ok(mapper.Map<ProjectViewModel>(project));
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        var projects = await projectService.GetAllAsync(userId, cancellationToken);
+        return Ok(mapper.Map<List<ProjectViewModel>>(projects));
     }
 }

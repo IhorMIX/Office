@@ -1,6 +1,6 @@
 namespace Office.BLL.Models;
 
-public class SubdivisionModel: BaseModel
+public class SelectionModel: BaseModel
 {
     public string Name { get; set; } = null!;
 }

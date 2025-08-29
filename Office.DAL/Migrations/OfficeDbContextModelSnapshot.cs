@@ -45,6 +45,9 @@ namespace Office.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ApprovalRequestStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("ApproverId")
                         .HasColumnType("int");
 
@@ -53,9 +56,6 @@ namespace Office.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("LeaveRequestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

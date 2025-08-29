@@ -23,15 +23,15 @@ public class SubdivisionController(ISubdivisionService subdivisionService, IMapp
     }
 
     [HttpPost("create-subdivision")]
-    public async Task<IActionResult> CreatePosition(SelectionCreateModel subdivisionCreateModel, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> CreateSubdivision(SelectionCreateModel subdivisionCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
-        var result = await subdivisionService.CreateSubdivisionAsync(mapper.Map<SubdivisionModel>(subdivisionCreateModel), adminId, cancellationToken);
+        var result = await subdivisionService.CreateSubdivisionAsync(mapper.Map<Subdivision>(subdivisionCreateModel), adminId, cancellationToken);
         return Ok(mapper.Map<SelectionViewModel>(result));
     }
     
     [HttpDelete("{subdivisionId:int}")]
-    public async Task<IActionResult> DeletePosition(int subdivisionId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> DeleteSubdivision(int subdivisionId, CancellationToken cancellationToken = default)
     {
         var managerId = User.GetUserId();
         await subdivisionService.DeleteSubdivisionAsync(subdivisionId,managerId,cancellationToken);
@@ -39,10 +39,17 @@ public class SubdivisionController(ISubdivisionService subdivisionService, IMapp
     }
     
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] SelectionViewModel subdivision, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> UpdateSubdivision([FromBody] SelectionViewModel subdivision, CancellationToken cancellationToken = default)
     {
         var userId = User.GetUserId();
         await subdivisionService.UpdateSubdivisionAsync(userId, mapper.Map<Subdivision>(subdivision), cancellationToken);
         return Ok();
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetSubdivisions(CancellationToken cancellationToken = default)
+    {
+        var subdivisions = await subdivisionService.GetAllAsync(cancellationToken);
+        return Ok(mapper.Map<List<SelectionViewModel>>(subdivisions));
     }
 } 

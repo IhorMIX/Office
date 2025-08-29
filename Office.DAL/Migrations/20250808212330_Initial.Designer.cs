@@ -12,7 +12,7 @@ using Office.DAL;
 namespace Office.DAL.Migrations
 {
     [DbContext(typeof(OfficeDbContext))]
-    [Migration("20250702170352_Initial")]
+    [Migration("20250808212330_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -48,6 +48,9 @@ namespace Office.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ApprovalRequestStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("ApproverId")
                         .HasColumnType("int");
 
@@ -56,9 +59,6 @@ namespace Office.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("LeaveRequestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

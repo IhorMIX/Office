@@ -26,7 +26,7 @@ public class PositionController(IPositionService positionService, IMapper mapper
     public async Task<IActionResult> CreatePosition(SelectionCreateModel positionCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
-        var result = await positionService.CreatePositionAsync(mapper.Map<PositionModel>(positionCreateModel), adminId, cancellationToken);
+        var result = await positionService.CreatePositionAsync(mapper.Map<Position>(positionCreateModel), adminId, cancellationToken);
         return Ok(mapper.Map<SelectionViewModel>(result));
     }
     
@@ -39,11 +39,19 @@ public class PositionController(IPositionService positionService, IMapper mapper
     }
     
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] SelectionViewModel position,
+    public async Task<IActionResult> UpdatePosition([FromBody] SelectionViewModel position,
         CancellationToken cancellationToken = default)
     {
         var userId = User.GetUserId();
         await positionService.UpdatePositionAsync(userId, mapper.Map<Position>(position), cancellationToken);
         return Ok();
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetPositions(CancellationToken cancellationToken = default)
+    {
+        var positions = await positionService.GetAllAsync(cancellationToken);
+        return Ok(mapper.Map<List<SelectionViewModel>>(positions));
+    }
+
 } 

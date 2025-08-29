@@ -8,7 +8,7 @@ public class PositionRepository(OfficeDbContext officeDbContext) : IPositionRepo
 {
     public IQueryable<Position> GetAll()
     {
-        return officeDbContext.Positions.AsQueryable();
+        return officeDbContext.Positions.AsNoTracking();
     }
 
     public async Task<Position?> GetByIdAsync(int id, CancellationToken cancellationToken = default)

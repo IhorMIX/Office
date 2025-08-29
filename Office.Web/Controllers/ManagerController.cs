@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Office.BLL.Exceptions;
 using Office.BLL.Models;
 using Office.BLL.Services.Interfaces;
+using Office.DAL.Repositories.Intefaces;
 using Office.Web.Extensions;
 using Office.Web.Models;
 
@@ -12,7 +13,7 @@ namespace Office.Web.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class ManagerController(IManagerService managerService,IEmployeeService employeeService, IMapper mapper) : ControllerBase
+public class ManagerController(IManagerService managerService,IEmployeeRepository employeeRepository, IMapper mapper) : ControllerBase
 {
     [HttpGet("{managerId:int}")]
     public async Task<IActionResult> GetById(int managerId, CancellationToken cancellationToken = default)
@@ -80,5 +81,20 @@ public class ManagerController(IManagerService managerService,IEmployeeService e
         var userId = User.GetUserId();
         var managers = await managerService.GetProjectManagers(userId, cancellationToken);
         return Ok(mapper.Map<List<ProjectManagerViewModel>>(managers));
+    }
+    
+    [HttpGet("admin")]
+    public async Task<IActionResult> GetAdmin(CancellationToken cancellationToken = default)
+    {
+        var admin = await managerService.GetAdminAsync(cancellationToken);
+        return Ok(mapper.Map<ManagerViewModel>(admin));
+    }
+    
+    [HttpGet("approvers")]
+    public async Task<IActionResult> GetApprovers(CancellationToken cancellationToken = default)
+    {
+        var userId = User.GetUserId();
+        var approvedRequest = await managerService.GetApproversAsync(userId, cancellationToken);
+        return Ok(mapper.Map<List<ManagerViewModel>>(approvedRequest));
     }
 }

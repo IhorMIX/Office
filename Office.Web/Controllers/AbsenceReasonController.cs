@@ -39,11 +39,18 @@ public class AbsenceReasonController(IAbsenceReasonService absenceReasonService,
     }
     
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] AbsenceReasonViewModel absenceReason,
+    public async Task<IActionResult> UpdateAbsenceReason([FromBody] AbsenceReasonViewModel absenceReason,
         CancellationToken cancellationToken = default)
     {
         var userId = User.GetUserId();
         await absenceReasonService.UpdateAbsenceReasonAsync(userId, mapper.Map<AbsenceReason>(absenceReason), cancellationToken);
         return Ok();
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetAbsenceReasons(CancellationToken cancellationToken = default)
+    {
+        var absenceReasons = await absenceReasonService.GetAllAsync(cancellationToken);
+        return Ok(mapper.Map<List<AbsenceReasonViewModel>>(absenceReasons));
     }
 } 

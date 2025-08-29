@@ -23,7 +23,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<BaseManagerModel> CreateManagerAsync(int adminId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
     {
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -54,7 +54,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<BaseManagerModel> UpdateManagerAsync(int managerId, BaseManagerModel managerModel, CancellationToken cancellationToken = default)
     {
-        var updater = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == managerId && r is Admin, cancellationToken);
+        var updater = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == managerId && r is Admin, cancellationToken);
         if (updater is null)
             throw new NotPermissionException("You don't have permissions");
 
@@ -92,7 +92,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
             throw new NotPermissionException("You can't delete yourself");
         
         var adminUser = await employeeRepository.GetAllManagers()
-            .SingleOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == adminId && r is Admin, cancellationToken);
     
         if (adminUser is null)
             throw new NotPermissionException("You don't have permissions");
@@ -108,7 +108,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
     //adminId - admin or HR
     public async Task<List<BaseManagerModel>> GetAll(int adminId, CancellationToken cancellationToken = default)
     {
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -120,7 +120,7 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<List<HrManagerModel>> GetHrManagers(int adminId, CancellationToken cancellationToken = default)
     {
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
@@ -131,11 +131,39 @@ public class ManagerService(IEmployeeRepository employeeRepository, IMapper mapp
 
     public async Task<List<ProjectManagerModel>> GetProjectManagers(int adminId, CancellationToken cancellationToken = default)
     {
-        var user = await employeeRepository.GetAllManagers().SingleOrDefaultAsync(r => r.Id == adminId, cancellationToken);
+        var user = await employeeRepository.GetAllManagers().FirstOrDefaultAsync(r => r.Id == adminId, cancellationToken);
         if (user is null)
             throw new NotPermissionException("You don't have permissions");
         
         var managersDb = await employeeRepository.GetAllProjectManagers().ToListAsync(cancellationToken);
         return mapper.Map<List<ProjectManagerModel>>(managersDb);
+    }
+    
+    public async Task<BaseManager> GetAdminAsync(CancellationToken cancellation = default)
+    {
+        var admin = await employeeRepository.GetAdmin().FirstOrDefaultAsync(cancellation);;
+        return mapper.Map<BaseManager>(admin);
+    }
+    public async Task<List<BaseManager>> GetApproversAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        var userDb = await employeeRepository.GetAllEmployees()
+            .SingleOrDefaultAsync(r => r.Id == userId, cancellationToken);
+        if (userDb is null)
+            throw new ManagerException($"Manager or admin with Id {userId} not found");
+
+
+        var hrManagersTask = await employeeRepository.GetAllManagers()
+            .OfType<HrManager>()
+            .Where(r => r.Workers.Any(i => i.Id == userId))
+            .ToListAsync(cancellationToken);
+
+        var projectManagersTask = await employeeRepository.GetAllManagers()
+            .OfType<ProjectManager>()
+            .Where(r => r.Projects.Any(j => j.Employees.Any(d => d.Id == userId)))
+            .ToListAsync(cancellationToken);
+        
+        var approvers = hrManagersTask.Concat<BaseManager>(projectManagersTask).ToList();
+
+        return approvers;
     }
 }

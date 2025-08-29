@@ -14,11 +14,15 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
             .Include(r => ((Employee)r).Subdivision)
             .AsQueryable();
     }
-
+    public IQueryable<BaseManager> GetAdmin()
+    {
+        return officeDbContext.Admins.AsNoTracking();
+    }
+    
     public IQueryable<BaseManager> GetAllManagers()
     {
         return officeDbContext.Managers.Include(i => i.ApprovalRequests)
-            .AsQueryable();
+            .AsNoTracking();
     }
     
     public IQueryable<Employee> GetAllEmployees()
@@ -29,18 +33,19 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
             .Include(r => r.HrManager)
             .AsQueryable();
     }
+
     public IQueryable<HrManager> GetAllHrManagers()
     {
         return officeDbContext.HrManagers
             .Include(i => i.Workers)
-            .AsQueryable();
+            .AsNoTracking();
     }
     public IQueryable<ProjectManager> GetAllProjectManagers()
     {
         return officeDbContext.ProjectManagers
             .Include(r => r.Projects)
             .ThenInclude(r=>r.ProjectType)
-            .AsQueryable();
+            .AsNoTracking();
     }
     public async Task<BaseEmployee?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
@@ -59,12 +64,15 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
     public async Task<BaseEmployee?> GetManagerByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await officeDbContext.BaseEmployees
+            .AsNoTracking()
             .Where(e => e is HrManager || e is ProjectManager)
             .Include(r => (r as HrManager)!.Workers)
+            .ThenInclude(w => w.Position)
             .Include(r => (r as ProjectManager)!.Projects)
             .ThenInclude(p => p.ProjectType)
             .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
+
 
     public async Task<BaseEmployee> AddEmployeeAsync(BaseEmployee employee, CancellationToken cancellationToken = default)
     {

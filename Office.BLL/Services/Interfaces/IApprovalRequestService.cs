@@ -8,7 +8,6 @@ public interface IApprovalRequestService : IBasicService<ApprovalRequestModel>
     Task<List<ApprovalRequestModel>> GetApprovalRequestsAsync(int userId, CancellationToken cancellationToken = default);
     Task<ApprovalRequestModel> ApproveLeaveRequestAsync(int managerId, int requestId, string comment,
         CancellationToken cancellationToken = default);
-    
-    Task<ApprovalRequestModel> DeclineLeaveRequestAsync(int managerId,  int requestId, string comment,
+    Task<ApprovalRequestModel> RejectLeaveRequestAsync(int managerId,  int requestId, string comment,
         CancellationToken cancellationToken = default);
 }

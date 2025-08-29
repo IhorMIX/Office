@@ -8,7 +8,9 @@ public class LeaveRequestRepository(OfficeDbContext officeDbContext) : ILeaveReq
 {
     public IQueryable<LeaveRequest> GetAll()
     {
-        return officeDbContext.LeaveRequests.Include(r => r.AbsenceReason).AsQueryable();
+        return officeDbContext.LeaveRequests.Include(r => r.AbsenceReason)
+            .Include(r => r.ApprovalRequest).ThenInclude(r=>r.Approver)
+            .AsNoTracking();
     }
 
     public async Task<LeaveRequest?> GetByIdAsync(int id, CancellationToken cancellationToken = default)

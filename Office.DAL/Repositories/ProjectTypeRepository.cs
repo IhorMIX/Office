@@ -8,14 +8,14 @@ public class ProjectTypeRepository(OfficeDbContext officeDbContext) : IProjectTy
 {
     public IQueryable<ProjectType> GetAll()
     {
-        return officeDbContext.ProjectTypes.AsQueryable();
+        return officeDbContext.ProjectTypes.AsNoTracking();
     }
 
     public async Task<ProjectType?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await officeDbContext.ProjectTypes.SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
-
+    
     public async Task<ProjectType> CreateProjectTypeAsync(ProjectType projectType, CancellationToken cancellationToken = default)
     {
         var entity = await officeDbContext.ProjectTypes.AddAsync(projectType,cancellationToken);
