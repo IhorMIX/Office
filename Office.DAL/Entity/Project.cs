@@ -18,5 +18,7 @@ public class Project : BaseEntity
     
     public ICollection<Employee> Employees { get; set; } = null!;
     
+    public ICollection<TaskEntity> Tasks { get; set; } = null!;
+    
     public bool Status { get; set; }
 }
