@@ -39,7 +39,7 @@ public class LeaveRequestService(ILeaveRequestRepository leaveRequestRepository,
         var employeeDb = await employeeRepository.GetAll()
             .FirstOrDefaultAsync(r => r.Id == employeeId && r is Employee, cancellationToken);
         
-        if (employeeDb is not Employee)
+        if (employeeDb is null)
             throw new EmployeeNotFoundException($"Employee with Id {employeeId} not found");
         
         var requestDb = await leaveRequestRepository.CreateLeaveRequestAsync(new LeaveRequest
