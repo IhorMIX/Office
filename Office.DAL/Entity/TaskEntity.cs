@@ -1,4 +1,5 @@
 using Office.DAL.Entity.Employees;
+using TaskStatus = Office.DAL.Entity.Enums.TaskStatus;
 
 namespace Office.DAL.Entity;
 

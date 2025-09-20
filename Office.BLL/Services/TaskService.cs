@@ -1,8 +1,13 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Office.BLL.Exceptions;
+using Office.BLL.Helpers;
 using Office.BLL.Models;
 using Office.BLL.Services.Interfaces;
+using Office.DAL.Entity;
+using Office.DAL.Entity.Employees;
 using Office.DAL.Repositories.Intefaces;
+using TaskStatus = Office.DAL.Entity.Enums.TaskStatus;
 
 namespace Office.BLL.Services;
 
@@ -19,23 +24,100 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         return task;
     }
 
-    public Task<TaskEntityModel> CreateTaskAsync(int creatorId, TaskEntityModel taskEntityModel, CancellationToken cancellationToken)
+    public async Task<TaskEntityModel> CreateTaskAsync(
+        int creatorId, 
+        TaskEntityModel taskEntityModel, 
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var employeeDb = await employeeRepository.GetByIdAsync(creatorId, cancellationToken)
+                         ?? throw new EmployeeNotFoundException($"Employee with Id {creatorId} not found");
+        
+        var exists = await taskRepository.GetAll()
+            .AnyAsync(t => t.Title == taskEntityModel.Title, cancellationToken);
+
+        if (exists)
+            throw new AlreadyDataException($"Task with title '{taskEntityModel.Title}' already exists");
+
+        var taskEntity = new TaskEntity
+        {
+            EmployeeId = employeeDb.Id,
+            ProjectId = taskEntityModel.ProjectId,
+            StartDate = taskEntityModel.StartDate,
+            EndDate = taskEntityModel.EndDate,
+            TaskStatus = TaskStatus.New,
+            Title = taskEntityModel.Title,
+            Description = taskEntityModel.Description
+        };
+
+        var taskDb = await taskRepository.CreateTaskAsync(taskEntity, cancellationToken);
+
+        return mapper.Map<TaskEntityModel>(taskDb);
     }
 
-    public Task<TaskEntityModel> UpdateTaskAsync(int managerId, LeaveRequestModel leaveRequestModel, CancellationToken cancellationToken = default)
+
+    public async Task<TaskEntityModel> UpdateTaskAsync(int managerId, TaskEntityModel taskEntityModel, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var managerDb = await employeeRepository.GetAll()
+            .FirstOrDefaultAsync(r => r.Id == managerId && (r is ProjectManager || r is Admin),
+                cancellationToken);
+        if (managerDb is null)
+            throw new NotPermissionException("You don't have permissions");
+
+        var taskDb = await taskRepository.GetByIdAsync(taskEntityModel.Id, cancellationToken);
+        if (taskDb is null)
+            throw new EntityNotFoundException($"Project with Id {taskEntityModel.Id} not found");
+
+        foreach (var propertyMap in ReflectionHelper.WidgetUtil<TaskEntityModel, TaskEntity>.PropertyMap)
+        {
+            var userProperty = propertyMap.Item1;
+            var userDbProperty = propertyMap.Item2;
+
+            var userSourceValue = userProperty.GetValue(taskEntityModel);
+            var userTargetValue = userDbProperty.GetValue(taskDb);
+
+            if (userSourceValue != null && !ReferenceEquals(userSourceValue, "") &&
+                !userSourceValue.Equals(userTargetValue))
+            {
+                userDbProperty.SetValue(taskDb, userSourceValue);
+            }
+        }
+        await taskRepository.UpdateTaskAsync(taskDb, cancellationToken);
+        return mapper.Map<TaskEntityModel>(taskDb);
     }
 
-    public Task DeleteTaskAsync(int managerId, int taskId, CancellationToken cancellationToken = default)
+    public async Task DeleteTaskAsync(int managerId, int taskId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))
+            .FirstOrDefaultAsync(cancellationToken);
+        if (creator is null)
+            throw new NotPermissionException("You don't have permissions");
+        
+        var taskDb = await taskRepository.GetByIdAsync(taskId, cancellationToken);
+        
+        if (taskDb is null)
+            throw new EntityNotFoundException($"Task with Id {taskId} not found");
+        await taskRepository.DeleteTaskAsync(taskDb, cancellationToken);
     }
 
-    public Task<List<TaskEntityModel>> GetAllAsync(int employeeId, CancellationToken cancellationToken = default)
+    public async Task<List<TaskEntityModel>> GetAllAsync(
+        int employeeId,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var employeeDb = await employeeRepository.GetByIdAsync(employeeId, cancellationToken)
+                         ?? throw new EntityNotFoundException($"Employee with Id {employeeId} not found");
+
+        IQueryable<TaskEntity> query = taskRepository.GetAll();
+
+        query = employeeDb switch
+        {
+            Admin => query,
+            ProjectManager pm => query.Where(t => t.Project!.ProjectManagerId == pm.Id),
+            Employee => query.Where(t => t.EmployeeId == employeeId),
+            _ => throw new NotPermissionException("You don't have permissions")
+        };
+
+        var tasks = await query.ToListAsync(cancellationToken);
+        return mapper.Map<List<TaskEntityModel>>(tasks);
     }
+
 }
