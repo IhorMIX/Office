@@ -7,7 +7,7 @@ public interface ITaskInterface: IBasicService<TaskEntityModel>
     Task<TaskEntityModel> CreateTaskAsync(int creatorId,  TaskEntityModel taskEntityModel,
         CancellationToken cancellationToken);
 
-    Task<TaskEntityModel> UpdateTaskAsync(int managerId, LeaveRequestModel leaveRequestModel,
+    Task<TaskEntityModel> UpdateTaskAsync(int managerId, TaskEntityModel taskEntityModel,
         CancellationToken cancellationToken = default);
 
     Task DeleteTaskAsync(int managerId, int taskId, CancellationToken cancellationToken = default);
