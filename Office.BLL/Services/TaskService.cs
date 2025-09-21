@@ -12,7 +12,7 @@ using TaskStatus = Office.DAL.Entity.Enums.TaskStatus;
 namespace Office.BLL.Services;
 
 public class TaskService(ITaskRepository taskRepository, IMapper mapper,
-    IEmployeeRepository employeeRepository, IProjectRepository projectRepository): ITaskInterface
+    IEmployeeRepository employeeRepository, IProjectRepository projectRepository): ITaskService
 {
     public async Task<TaskEntityModel> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {

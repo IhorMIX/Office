@@ -2,7 +2,7 @@ using Office.BLL.Models;
 
 namespace Office.BLL.Services.Interfaces;
 
-public interface ITaskInterface: IBasicService<TaskEntityModel>
+public interface ITaskService: IBasicService<TaskEntityModel>
 {
     Task<TaskEntityModel> CreateTaskAsync(int creatorId,  TaskEntityModel taskEntityModel,
         CancellationToken cancellationToken);
