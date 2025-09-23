@@ -14,6 +14,7 @@ public class ProjectModel : BaseModel
     public string Comment { get; set; } = null!;
     
     public ICollection<EmployeeModel> Employees { get; set; } = null!;
+    public ICollection<TaskEntityModel> Tasks { get; set; } = null!;
     
     public bool Status { get; set; }
 }

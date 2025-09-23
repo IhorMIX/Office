@@ -17,4 +17,5 @@ public class EmployeeModel : BaseEmployeeModel
     
     public ICollection<LeaveRequestModel> LeaveRequests { get; set; } = null!;
     public ICollection<ProjectModel> Projects { get; set; } = null!;
+    public ICollection<TaskEntityModel> Tasks { get; set; } = null!;
 }
