@@ -14,5 +14,5 @@ public class TaskViewModel
     public string Title { get; set; }  = null!;
     public string Description { get; set; }  = null!;
 
-    public bool Status { get; set; }
+    public bool TaskStatus { get; set; }
 }
