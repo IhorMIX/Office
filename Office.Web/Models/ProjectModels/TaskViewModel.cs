@@ -1,3 +1,5 @@
+using TaskStatus = Office.DAL.Entity.Enums.TaskStatus;
+
 namespace Office.Web.Models;
 
 public class TaskViewModel
@@ -14,5 +16,5 @@ public class TaskViewModel
     public string Title { get; set; }  = null!;
     public string Description { get; set; }  = null!;
 
-    public bool TaskStatus { get; set; }
+    public TaskStatus TaskStatus { get; set; }
 }
