@@ -85,6 +85,11 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         return mapper.Map<TaskEntityModel>(taskDb);
     }
 
+    public Task<TaskEntityModel> AssignTaskAsync(int managerId, TaskEntityModel taskEntityModel, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task DeleteTaskAsync(int managerId, int taskId, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))
