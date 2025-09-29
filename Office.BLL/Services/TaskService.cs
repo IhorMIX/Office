@@ -29,8 +29,10 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         TaskEntityModel taskEntityModel, 
         CancellationToken cancellationToken)
     {
-        var employeeDb = await employeeRepository.GetByIdAsync(creatorId, cancellationToken)
-                         ?? throw new EmployeeNotFoundException($"Employee with Id {creatorId} not found");
+        var creatorDb = await employeeRepository.GetAll().Where(r => r.Id == creatorId && (r is ProjectManager || r is Admin))
+            .FirstOrDefaultAsync(cancellationToken);
+        if (creatorDb is null)
+            throw new NotPermissionException("You don't have permissions");
         
         var exists = await taskRepository.GetAll()
             .AnyAsync(t => t.Title == taskEntityModel.Title, cancellationToken);
@@ -40,7 +42,7 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
 
         var taskEntity = new TaskEntity
         {
-            EmployeeId = employeeDb.Id,
+            EmployeeId = creatorDb.Id,
             ProjectId = taskEntityModel.ProjectId,
             StartDate = taskEntityModel.StartDate,
             EndDate = taskEntityModel.EndDate,
@@ -85,7 +87,7 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         return mapper.Map<TaskEntityModel>(taskDb);
     }
 
-    public Task<TaskEntityModel> AssignTaskAsync(int managerId, TaskEntityModel taskEntityModel, CancellationToken cancellationToken = default)
+    public async Task<TaskEntityModel> AssignTaskAsync(int managerId, TaskEntityModel taskEntityModel, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
