@@ -41,7 +41,15 @@ public class TaskController(ITaskService taskService, IMapper mapper)
     public async Task<IActionResult> UpdateTask([FromBody]TaskUpdateModel taskUpdateModel, CancellationToken cancellationToken = default)
     {
         var managerId = User.GetUserId();
-        var project= await taskService.UpdateTaskAsync(managerId,mapper.Map<TaskEntityModel>(taskUpdateModel), cancellationToken);
-        return Ok(mapper.Map<TaskViewModel>(project));
+        var task= await taskService.UpdateTaskAsync(managerId,mapper.Map<TaskEntityModel>(taskUpdateModel), cancellationToken);
+        return Ok(mapper.Map<TaskViewModel>(task));
+    }
+    
+    [HttpPut("assign-task")]
+    public async Task<IActionResult> AssignTaskAsync([FromBody]TaskUpdateModel taskUpdateModel, CancellationToken cancellationToken = default)
+    {
+        var managerId = User.GetUserId();
+        var task= await taskService.AssignTaskAsync(managerId,taskUpdateModel.EmployeeId, mapper.Map<TaskEntityModel>(taskUpdateModel), cancellationToken);
+        return Ok(mapper.Map<TaskViewModel>(task));
     }
 }
