@@ -56,7 +56,6 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         return mapper.Map<TaskEntityModel>(taskDb);
     }
 
-
     public async Task<TaskEntityModel> UpdateTaskAsync(int managerId, TaskEntityModel taskEntityModel, CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAll()
@@ -87,9 +86,28 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         return mapper.Map<TaskEntityModel>(taskDb);
     }
 
-    public async Task<TaskEntityModel> AssignTaskAsync(int managerId, TaskEntityModel taskEntityModel, CancellationToken cancellationToken = default)
+    public async Task<TaskEntityModel> AssignTaskAsync(int managerId,int employeeId, TaskEntityModel taskEntityModel, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is ProjectManager || r is Admin))
+            .FirstOrDefaultAsync(cancellationToken);
+        if (creator is null)
+            throw new NotPermissionException("You don't have permissions");
+        
+        var taskDb = await taskRepository.GetByIdAsync(taskEntityModel.Id, cancellationToken);
+        
+        if (taskDb is null)
+            throw new EntityNotFoundException($"Task with Id {taskEntityModel.Id} not found");
+
+        var employeeDb = await employeeRepository.GetByIdAsync(employeeId, cancellationToken);
+        if (employeeDb is null)
+            throw new EntityNotFoundException($"Employee with Id {employeeId} not found");
+        
+        taskEntityModel.TaskStatus = Models.Enums.TaskStatus.InProgress;
+        taskEntityModel.EmployeeId = employeeId;
+        
+        await employeeRepository.UpdateEmployeeAsync(employeeDb, cancellationToken);
+        await UpdateTaskAsync(managerId, taskEntityModel, cancellationToken);
+        return mapper.Map<TaskEntityModel>(taskDb);
     }
 
     public async Task DeleteTaskAsync(int managerId, int taskId, CancellationToken cancellationToken = default)
