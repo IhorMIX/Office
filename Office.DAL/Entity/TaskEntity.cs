@@ -5,9 +5,7 @@ namespace Office.DAL.Entity;
 
 public class TaskEntity : BaseEntity
 {
-    public int EmployeeId { get; set; }
-    public Employee Employee { get; set; } = null!;
-
+    public ICollection<Employee> Employees { get; set; } = null!;
     public int? ProjectId { get; set; }
     public Project? Project { get; set; }
 
