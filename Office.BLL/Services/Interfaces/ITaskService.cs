@@ -9,8 +9,9 @@ public interface ITaskService: IBasicService<TaskEntityModel>
 
     Task<TaskEntityModel> UpdateTaskAsync(int managerId, TaskEntityModel taskEntityModel,
         CancellationToken cancellationToken = default);
-    Task<TaskEntityModel> AssignTaskAsync(int managerId,int employeeId, TaskEntityModel taskEntityModel,
-        CancellationToken cancellationToken = default);
+
+    Task AssignTaskAsync(
+        int managerId, int taskId, ICollection<int> employeeIds, CancellationToken cancellationToken = default);
     Task DeleteTaskAsync(int managerId, int taskId, CancellationToken cancellationToken = default);
     Task<List<TaskEntityModel>> GetAllAsync(int employeeId, CancellationToken cancellationToken = default);
 }
