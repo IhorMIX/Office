@@ -8,10 +8,8 @@ public class TaskEntityConfiguration : IEntityTypeConfiguration<TaskEntity>
 {
     public void Configure(EntityTypeBuilder<TaskEntity> builder)
     {
-        builder.HasOne(t => t.Employee)
-            .WithMany(e => e.Tasks)
-            .HasForeignKey(t => t.EmployeeId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(t => t.Employees)
+            .WithMany(e => e.Tasks);
             
         builder.HasOne(t => t.Project)
             .WithMany(p => p.Tasks)
