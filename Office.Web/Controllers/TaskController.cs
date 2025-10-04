@@ -25,8 +25,8 @@ public class TaskController(ITaskService taskService, IMapper mapper)
     public async Task<IActionResult> CreateTask([FromBody] TaskCreateModel taskCreateModel, CancellationToken cancellationToken = default)
     {
         var adminId = User.GetUserId();
-        var result = await taskService.CreateTaskAsync(adminId, mapper.Map<TaskEntityModel>(taskCreateModel),  cancellationToken);
-        return Ok(mapper.Map<TaskViewModel>(result));
+        await taskService.CreateTaskAsync(adminId, mapper.Map<TaskEntityModel>(taskCreateModel),  cancellationToken);
+        return Ok();
     }
     
     [HttpDelete("{taskId:int}")]
@@ -46,10 +46,11 @@ public class TaskController(ITaskService taskService, IMapper mapper)
     }
     
     [HttpPut("assign-task")]
-    public async Task<IActionResult> AssignTaskAsync([FromBody]TaskUpdateModel taskUpdateModel, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> AssignTaskAsync([FromBody] AssignEmployeeInTaskModel assignEmployee, CancellationToken cancellationToken = default)
     {
         var managerId = User.GetUserId();
-        var task= await taskService.AssignTaskAsync(managerId,taskUpdateModel.EmployeeId, mapper.Map<TaskEntityModel>(taskUpdateModel), cancellationToken);
-        return Ok(mapper.Map<TaskViewModel>(task));
+        await taskService.AssignTaskAsync(managerId, assignEmployee.TaskId, assignEmployee.EmployeeIds, cancellationToken);
+        return Ok();
     }
+
 }
