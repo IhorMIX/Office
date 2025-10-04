@@ -14,4 +14,5 @@ public interface IEmployeeRepository : IBasicRepository<BaseEmployee>
     IQueryable<HrManager> GetAllHrManagers();
     IQueryable<ProjectManager> GetAllProjectManagers();
     IQueryable<BaseManager> GetAdmin();
+    Task<List<BaseEmployee>> GetByIdsAsync(List<int> ids, CancellationToken cancellationToken = default);
 }
