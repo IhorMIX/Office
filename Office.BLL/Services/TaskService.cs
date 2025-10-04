@@ -58,7 +58,10 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         return mapper.Map<TaskEntityModel>(taskDb);
     }
     
-    public async Task<TaskEntityModel> UpdateTaskAsync(int managerId, TaskEntityModel taskEntityModel, CancellationToken cancellationToken = default)
+    public async Task<TaskEntityModel> UpdateTaskAsync(
+        int managerId,
+        TaskEntityModel taskEntityModel,
+        CancellationToken cancellationToken = default)
     {
         var managerDb = await employeeRepository.GetAll()
             .FirstOrDefaultAsync(r => r.Id == managerId && (r is ProjectManager || r is Admin),
@@ -68,12 +71,17 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
 
         var taskDb = await taskRepository.GetByIdAsync(taskEntityModel.Id, cancellationToken);
         if (taskDb is null)
-            throw new EntityNotFoundException($"Project with Id {taskEntityModel.Id} not found");
-
+            throw new EntityNotFoundException($"Task with Id {taskEntityModel.Id} not found");
+        
+        var oldStatus = taskDb.TaskStatus;
+        
         foreach (var propertyMap in ReflectionHelper.WidgetUtil<TaskEntityModel, TaskEntity>.PropertyMap)
         {
             var userProperty = propertyMap.Item1;
             var userDbProperty = propertyMap.Item2;
+
+            if (userProperty.Name == nameof(TaskEntity.TaskStatus))
+                continue;
 
             var userSourceValue = userProperty.GetValue(taskEntityModel);
             var userTargetValue = userDbProperty.GetValue(taskDb);
@@ -84,9 +92,14 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
                 userDbProperty.SetValue(taskDb, userSourceValue);
             }
         }
+
+        taskDb.TaskStatus = oldStatus;
+
         await taskRepository.UpdateTaskAsync(taskDb, cancellationToken);
+
         return mapper.Map<TaskEntityModel>(taskDb);
     }
+
 
     public async Task AssignTaskAsync(
         int managerId,

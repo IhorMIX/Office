@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Office.DAL.Entity;
+using Office.DAL.Entity.Employees;
 using Office.DAL.Repositories.Intefaces;
 
 namespace Office.DAL.Repositories;
@@ -8,15 +9,18 @@ public class TaskRepository(OfficeDbContext officeDbContext) : ITaskRepository
 {
     public IQueryable<TaskEntity> GetAll()
     {
-        return officeDbContext.Tasks.Include(r => r.Employee)
-            .Include(r => r.Project)
-            .AsNoTracking();
+        return officeDbContext.Tasks.Include(r => r.Employees)
+            .Include(r => r.Project);
     }
 
     public async Task<TaskEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await officeDbContext.Tasks.SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
+        return await officeDbContext.Tasks
+            .Include(r => r.Employees)
+            .Include(r => r.Project)
+            .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
+
 
     public async Task<TaskEntity> CreateTaskAsync(TaskEntity taskEntity, CancellationToken cancellationToken = default)
     {
