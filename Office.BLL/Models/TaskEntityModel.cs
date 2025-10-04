@@ -1,12 +1,12 @@
+using Office.DAL.Entity.Employees;
 using TaskStatus = Office.BLL.Models.Enums.TaskStatus;
 
 namespace Office.BLL.Models;
 
 public class TaskEntityModel : BaseModel
 {
-    public int EmployeeId { get; set; }
-    public EmployeeModel Employee { get; set; } = null!;
-
+    public ICollection<Employee> Employees { get; set; } = null!;
+    
     public int? ProjectId { get; set; }
     public ProjectModel? Project { get; set; }
 

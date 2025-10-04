@@ -5,7 +5,6 @@ namespace Office.Web.Models;
 public class TaskUpdateModel
 {
     public int Id { get; set; }
-    public int EmployeeId { get; set; }
     public int? ProjectId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
