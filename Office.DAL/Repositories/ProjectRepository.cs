@@ -9,7 +9,7 @@ public class ProjectRepository(OfficeDbContext officeDbContext) : IProjectReposi
 {
     public IQueryable<Project> GetAll()
     {
-        return officeDbContext.Projects.Include(i => i.Employees).Include(i => i.ProjectType).AsNoTracking();
+        return officeDbContext.Projects.Include(i => i.Employees).Include(i=>i.Tasks).Include(i => i.ProjectType).AsNoTracking();
     }
 
     public async Task<Project?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
