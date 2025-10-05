@@ -21,7 +21,6 @@ public class TaskRepository(OfficeDbContext officeDbContext) : ITaskRepository
             .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
 
-
     public async Task<TaskEntity> CreateTaskAsync(TaskEntity taskEntity, CancellationToken cancellationToken = default)
     {
         var entityEntry =  await officeDbContext.Tasks.AddAsync(taskEntity, cancellationToken);

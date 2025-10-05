@@ -39,11 +39,4 @@ public class ProjectRepository(OfficeDbContext officeDbContext) : IProjectReposi
         officeDbContext.Projects.Update(project);
         await officeDbContext.SaveChangesAsync(cancellationToken);
     }
-
-    public async Task AddEmployeesInProjectAsync(int projectId, List<Employee> employees, CancellationToken cancellationToken = default)
-    {
-        var project = await officeDbContext.Projects.Where(r => r.Id == projectId).SingleOrDefaultAsync(cancellationToken);
-        project!.Employees = employees;
-        await officeDbContext.SaveChangesAsync(cancellationToken);
-    }
 }
