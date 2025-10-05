@@ -100,7 +100,6 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         return mapper.Map<TaskEntityModel>(taskDb);
     }
 
-
     public async Task AssignTaskAsync(
         int managerId,
         int taskId,
@@ -166,5 +165,4 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         var tasks = await query.ToListAsync(cancellationToken);
         return mapper.Map<List<TaskEntityModel>>(tasks);
     }
-
 }
