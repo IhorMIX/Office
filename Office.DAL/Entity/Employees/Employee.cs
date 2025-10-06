@@ -18,4 +18,5 @@ public class Employee : BaseEmployee
     
     public ICollection<LeaveRequest> LeaveRequests { get; set; } = null!;
     public ICollection<Project> Projects { get; set; } = null!;
+    public ICollection<TaskEntity> Tasks { get; set; } = null!;
 }

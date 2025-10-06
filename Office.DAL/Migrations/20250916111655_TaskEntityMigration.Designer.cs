@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Office.DAL;
 
@@ -11,9 +12,11 @@ using Office.DAL;
 namespace Office.DAL.Migrations
 {
     [DbContext(typeof(OfficeDbContext))]
-    partial class OfficeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250916111655_TaskEntityMigration")]
+    partial class TaskEntityMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,21 +38,6 @@ namespace Office.DAL.Migrations
                     b.HasIndex("ProjectsId");
 
                     b.ToTable("EmployeeProject");
-                });
-
-            modelBuilder.Entity("EmployeeTaskEntity", b =>
-                {
-                    b.Property<int>("EmployeesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TasksId")
-                        .HasColumnType("int");
-
-                    b.HasKey("EmployeesId", "TasksId");
-
-                    b.HasIndex("TasksId");
-
-                    b.ToTable("EmployeeTaskEntity");
                 });
 
             modelBuilder.Entity("Office.DAL.Entity.ApprovalRequest", b =>
@@ -350,6 +338,9 @@ namespace Office.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -367,6 +358,8 @@ namespace Office.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("ProjectId");
 
@@ -455,21 +448,6 @@ namespace Office.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EmployeeTaskEntity", b =>
-                {
-                    b.HasOne("Office.DAL.Entity.Employees.Employee", null)
-                        .WithMany()
-                        .HasForeignKey("EmployeesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Office.DAL.Entity.TaskEntity", null)
-                        .WithMany()
-                        .HasForeignKey("TasksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Office.DAL.Entity.ApprovalRequest", b =>
                 {
                     b.HasOne("Office.DAL.Entity.Employees.BaseManager", "Approver")
@@ -539,10 +517,18 @@ namespace Office.DAL.Migrations
 
             modelBuilder.Entity("Office.DAL.Entity.TaskEntity", b =>
                 {
+                    b.HasOne("Office.DAL.Entity.Employees.Employee", "Employee")
+                        .WithMany("Tasks")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Office.DAL.Entity.Project", "Project")
                         .WithMany("Tasks")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Project");
                 });
@@ -617,6 +603,8 @@ namespace Office.DAL.Migrations
             modelBuilder.Entity("Office.DAL.Entity.Employees.Employee", b =>
                 {
                     b.Navigation("LeaveRequests");
+
+                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("Office.DAL.Entity.HrManager", b =>

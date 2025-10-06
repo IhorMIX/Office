@@ -9,7 +9,7 @@ public class ProjectRepository(OfficeDbContext officeDbContext) : IProjectReposi
 {
     public IQueryable<Project> GetAll()
     {
-        return officeDbContext.Projects.Include(i => i.Employees).Include(i => i.ProjectType).AsNoTracking();
+        return officeDbContext.Projects.Include(i => i.Employees).Include(i=>i.Tasks).Include(i => i.ProjectType).AsNoTracking();
     }
 
     public async Task<Project?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -37,13 +37,6 @@ public class ProjectRepository(OfficeDbContext officeDbContext) : IProjectReposi
     public async Task UpdateProjectAsync(Project project, CancellationToken cancellationToken = default)
     {
         officeDbContext.Projects.Update(project);
-        await officeDbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task AddEmployeesInProjectAsync(int projectId, List<Employee> employees, CancellationToken cancellationToken = default)
-    {
-        var project = await officeDbContext.Projects.Where(r => r.Id == projectId).SingleOrDefaultAsync(cancellationToken);
-        project!.Employees = employees;
         await officeDbContext.SaveChangesAsync(cancellationToken);
     }
 }

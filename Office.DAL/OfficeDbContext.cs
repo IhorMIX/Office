@@ -20,7 +20,7 @@ public class OfficeDbContext(DbContextOptions<OfficeDbContext> options) : DbCont
     public DbSet<Position> Positions { get; set; }
     public DbSet<ProjectType> ProjectTypes { get; set; }
     public DbSet<Subdivision> Subdivisions { get; set; }
-
+    public DbSet<TaskEntity> Tasks { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<BaseManager> Managers { get; set; }
 

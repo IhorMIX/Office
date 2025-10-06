@@ -28,7 +28,7 @@ public class EmployeeService(IEmployeeRepository employeeRepository, IMapper map
         var employeeModel = mapper.Map<EmployeeModel>(employeeDb);
         return employeeModel;
     }
-
+    
     public async Task<EmployeeModel> CreateEmployeeAsync(int managerId, EmployeeModel employeeModel, CancellationToken cancellationToken = default)
     {
         var creator = await employeeRepository.GetAll().Where(r => r.Id == managerId && (r is HrManager || r is Admin))

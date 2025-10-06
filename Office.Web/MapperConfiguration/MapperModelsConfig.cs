@@ -68,6 +68,7 @@ public class MapperModelsConfig : AutoMapper.Profile
         
         CreateMap<Project, ProjectModel>()
             .ReverseMap();
+        CreateMap<TaskEntity, TaskEntityModel>().ReverseMap();
         
         CreateMap<Employee, BaseEmployeeModel>()
             .ReverseMap();
@@ -165,6 +166,21 @@ public class MapperModelsConfig : AutoMapper.Profile
         CreateMap<ProjectUpdateModel, ProjectModel>()
             .ReverseMap();
 
+        CreateMap<TaskEntityModel, TaskViewModel>()
+            .ForMember(dest => dest.EmployeeIds,
+                opt => opt.MapFrom(src => src.Employees.Select(e => e.Id)));
+
+        CreateMap<TaskViewModel, TaskEntity>()
+            .ForMember(dest => dest.Employees, opt => opt.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.EmployeeIds,
+                opt => opt.MapFrom(src => src.Employees.Select(e => e.Id)));
+
+        CreateMap<TaskCreateModel, TaskEntityModel>()
+            .ReverseMap();
+        CreateMap<TaskEntityModel, TaskUpdateModel>()
+            .ReverseMap();
+        
         CreateMap<BaseEmployeeModel, CurrentUserViewModel>()
             .ForMember(dest => dest.EmployeeType, opt => opt.Ignore())
             .ReverseMap();

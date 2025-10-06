@@ -61,6 +61,10 @@ public class EmployeeRepository(OfficeDbContext officeDbContext) : IEmployeeRepo
             .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
     }
     
+    public Task<List<BaseEmployee>> GetByIdsAsync(List<int> ids, CancellationToken cancellationToken = default)
+    {
+        return officeDbContext.BaseEmployees.Where(u => ids.Contains(u.Id)).ToListAsync(cancellationToken);
+    }
     public async Task<BaseEmployee?> GetManagerByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await officeDbContext.BaseEmployees
