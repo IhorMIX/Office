@@ -54,7 +54,6 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         };
 
         var taskDb = await taskRepository.CreateTaskAsync(taskEntity, cancellationToken);
-
         return mapper.Map<TaskEntityModel>(taskDb);
     }
     
@@ -94,9 +93,8 @@ public class TaskService(ITaskRepository taskRepository, IMapper mapper,
         }
 
         taskDb.TaskStatus = oldStatus;
-
+        
         await taskRepository.UpdateTaskAsync(taskDb, cancellationToken);
-
         return mapper.Map<TaskEntityModel>(taskDb);
     }
 
