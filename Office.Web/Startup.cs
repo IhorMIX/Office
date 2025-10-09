@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
-using Office.BLL.Helpers;
 using Office.BLL.Services;
 using Office.BLL.Services.Interfaces;
 using Office.DAL;
@@ -13,7 +12,7 @@ using Office.Web.Helpers;
 namespace Office.Web;
 public class Startup(IConfiguration configuration)
 {
-    public IConfiguration Configuration { get; } = configuration;
+    private IConfiguration Configuration { get; } = configuration;
 
     public void ConfigureServices(IServiceCollection services)
     {
