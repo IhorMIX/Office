@@ -11,8 +11,7 @@ namespace Office.Web.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class TaskController(ITaskService taskService, IMapper mapper)
-    : ControllerBase
+public class TaskController(ITaskService taskService, IMapper mapper) : ControllerBase
 {
     [HttpGet("{taskId:int}")]
     public async Task<IActionResult> GetById(int taskId, CancellationToken cancellationToken = default)
