@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Office.DAL.Entity;
-using Office.DAL.Entity.Employees;
 using Office.DAL.Repositories.Intefaces;
 
 namespace Office.DAL.Repositories;
